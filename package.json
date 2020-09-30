@@ -1,0 +1,22 @@
+{
+  "name": "g5-asset-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tylrhas/g5-asset-scraper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tylrhas/g5-asset-scraper/issues"
+  },
+  "homepage": "https://github.com/tylrhas/g5-asset-scraper#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
