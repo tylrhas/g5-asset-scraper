@@ -10,16 +10,19 @@ class Scraper {
     this.rootProtocol = params.rootProtocol
     this.rootdomain = params.rootdomain
   }
-  run() {
+  async run() {
     for (let i = 0; i < this.pages.length; i++) {
       this.url = this.pages[i]
+      console.log(this.url)
       await this.getPage()
       this.parsePage()
       this.scrapePhotos()
     }
+    console.log(this.imageUrls)
   }
   async getPage() {
-    this.page = await axios.get(this.url)
+    const req = await axios.get(this.url)
+    this.page = req.data
   }
   async parsePage() {
     this.$ = cheerio.load(this.page)
@@ -30,6 +33,9 @@ class Scraper {
 
   }
   formatImageUrl(url) {
+      if (url.includes('(')) {
+        url = url.split('(')[1]
+      }
       const protocol = /^(http|https)/.test(url)
       if (protocol) {
         return url
@@ -38,7 +44,7 @@ class Scraper {
       const cleanPath = noProtocol.replace(/^\//, '')
       const isDomain = /\.(com|net|org|biz|ca|info)/.test(cleanPath)
       if (isDomain) {
-        return `${this.rootProtocol}//${cleanPath}`
+        return `${this.rootProtocol}://${cleanPath}`
       }
       return `${this.rootdomain}/${cleanPath}`
   }

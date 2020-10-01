@@ -1,7 +1,9 @@
 const express = require('express')
-const app = express();
+const bodyParser = require('body-parser')
+const app = express()
+app.use(bodyParser.json({ limit: '1000kb' }))
 const Scraper = require('./scraper')
-app.get('/', (req, res) => {
+app.post('/', async (req, res) => {
   const { body } = req
   const scraper = new Scraper(body)
   await scraper.run()
