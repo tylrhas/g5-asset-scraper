@@ -1,12 +1,14 @@
-const express = require('express');
+const express = require('express')
 const app = express();
-
+const Scraper = require('./scraper')
 app.get('/', (req, res) => {
-  const name = process.env.NAME || 'World';
-  res.send(`Hello ${name}!`);
-});
+  const { body } = req
+  const scraper = new Scraper(body)
+  await scraper.run()
+  res.send('Hello')
+})
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8080
 app.listen(port, () => {
-  console.log(`helloworld: listening on port ${port}`);
-});
+  console.log(`Listening on port ${port}`)
+})
