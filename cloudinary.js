@@ -16,10 +16,10 @@ module.exports = {
   upload
 };
 
-function upload (url) {
+function upload (url, location, page) {
   console.log(`Uploading from ${url}`);
   return new Promise((res, rej) => {
-    cloudinary.uploader.upload(url, function (err, response) {
+    cloudinary.uploader.upload(url, { folder: `${location}/${page}` }, function (err, response) {
       if (!err) {
         res(response);
       } else {
@@ -27,4 +27,11 @@ function upload (url) {
       }
     });
   });
+}
+
+function getImage (id) {}
+
+function update (id, attr) {
+  console.log(`Updating ${id}`);
+  return new Promise((res, rej) => {})
 }
