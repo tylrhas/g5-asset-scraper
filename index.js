@@ -13,9 +13,13 @@ app.post('/', async (req, res) => {
 })
 
 app.post('/upload', async (req, res) => {
-  const { imgSrc } = req.body
-  const cloudUrl = await upload(imgSrc)
-  res.json(cloudUrl)
+  const { urls, attribs } = req.body
+  try {
+    const cloudinaryRes = await upload(urls, attribs)
+    res.json(cloudinaryRes)
+  } catch (err) {
+    res.status(500).json(err)
+  }
 })
 
 const port = process.env.PORT || 8080

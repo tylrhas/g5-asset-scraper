@@ -16,22 +16,29 @@ module.exports = {
   upload
 }
 
-function upload (url, location, page) {
-  console.log(`Uploading from ${url}`)
-  return new Promise((res, rej) => {
-    cloudinary.uploader.upload(url, { folder: `${location}/${page}` }, function (err, response) {
-      if (!err) {
-        res(response)
-      } else {
-        rej(err)
-      }
-    })
-  })
+async function upload(urls, attribs) {
+  if (!urls || urls.length <= 0) return;
+  try {
+    return await Promise.all(urls.map((url) => {
+      return new Promise((res, rej) => {
+        cloudinary.uploader.upload(url, attribs, function (err, response) {
+          if (!err) {
+            res(response)
+          } else {
+            rej(err)
+          }
+        })
+      })
+    }))
+  } catch (err) {
+    console.error(err)
+    return err
+  }
 }
 
-function getImage (id) {}
+function getImage(id) {}
 
-function update (id, attr) {
-  console.log(`Updating ${id}`);
+function update(id, attr) {
+  console.log(`Updating ${id}`)
   return new Promise((res, rej) => {})
 }

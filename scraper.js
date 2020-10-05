@@ -35,7 +35,6 @@ class Scraper {
   scrapePhotos() {
     const urls = this.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
     this.imageUrls[this.url] = [...new Set(urls.map(url => this.formatImageUrl(url)))]
-
   }
 
   formatImageUrl(url) {
