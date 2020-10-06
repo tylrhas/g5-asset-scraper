@@ -22,6 +22,7 @@ class Scraper {
     this.address = null
     this.errors = {}
   }
+
   async run() {
     for (let i = 0; i < this.pages.length; i++) {
       try {
@@ -40,17 +41,21 @@ class Scraper {
     }
     console.log(this.errors)
   }
+
   async getPage() {
     const req = await axios.get(this.url)
     this.page = req.data
   }
+
   async parsePage() {
     this.$ = cheerio.load(this.page)
   }
+
   scrapePhotos() {
     const urls = this.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
     this.imageUrls[this.url] = [...new Set(urls.map(url => this.formatImageUrl(url)))]
   }
+
   formatImageUrl(url) {
     if (url.includes('(')) {
       url = url.split('(')[1]
