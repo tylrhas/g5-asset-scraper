@@ -30,9 +30,8 @@ class Scraper {
         console.log(this.url)
         await this.getPage()
         this.parsePage()
-        if (!this.addressFound) {
+        if (!this.address) {
           this.getAddress()
-          console.log(this.address)
         }
         // this.scrapePhotos() 
       } catch (error) {
@@ -78,7 +77,7 @@ class Scraper {
   }
   parsedAddress(address) {
     const matches = address.match(this.addressRegex)
-    this.address = parser.parseLocation(`${matches[0]}-2345`)
+    this.address = parser.parseLocation(matches[0])
   }
 }
 
