@@ -19,6 +19,7 @@
   "dependencies": {
     "axios": "^0.20.0",
     "cheerio": "^1.0.0-rc.3",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "parse-address": "^1.1.2"
   }
 }
