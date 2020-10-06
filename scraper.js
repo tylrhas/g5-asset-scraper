@@ -10,15 +10,26 @@ class Scraper {
     this.imageUrls = {}
     this.rootProtocol = params.rootProtocol
     this.rootdomain = params.rootdomain
+    this.phoneNumbers = {}
+    this.emails = {}
+    this.phoneRegex = /((\(\d{3}\)?)|(\d{3}))([\s-./]?)(\d{3})([\s-./]?)(\d{4})/gm
+    this.emailRegex = /([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)/gm
+    this.addressRegex = /\s*(\d+)((?:(?:\x20+[-'0-9A-zÀ-ÿ]+\.?)+?)\,?\x20*?)\-*,?\s+?\,?((?:[A-Za-z]+\x20*)+)\,\s(A[LKSZRAP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])\s+(\d+(?:-\d+)?)*/gm
+    // this.template = null
     this.template = {
       address: {
+        selector: '#address-block'
+      },
+      phone: {
+        selector: '#address-block'
+      },
+      email: {
         selector: '#address-block'
       }
     }
     // adapted from this regex fround on https://regexlib.com/REDetails.aspx?regexp_id=986
     // this.addressRegex = /^\s*((?:(?:\d+(?:\x20+\w+\.?)+(?:(?:\x20+STREET|ST|DRIVE|DR|AVENUE|AVE|ROAD|RD|LOOP|COURT|CT|CIRCLE|LANE|LN|BOULEVARD|BLVD)\.?)?)|(?:(?:P\.\x20?O\.|P\x20?O)\x20*Box\x20+\d+)|(?:General\x20+Delivery)|(?:C[\\\/]O\x20+(?:\w+\x20*)+))\,?\x20*(?:(?:(?:APT|BLDG|DEPT|FL|HNGR|LOT|PIER|RM|S(?:LIP|PC|T(?:E|OP))|TRLR|UNIT|\x23)\.?\x20*(?:[a-zA-Z0-9\-]+))|(?:BSMT|FRNT|LBBY|LOWR|OFC|PH|REAR|SIDE|UPPR))?)\,?\s+((?:(?:\d+(?:\x20+\w+\.?)+(?:(?:\x20+STREET|ST|DRIVE|DR|AVENUE|AVE|ROAD|RD|LOOP|COURT|CT|CIRCLE|LANE|LN|BOULEVARD|BLVD)\.?)?)|(?:(?:P\.\x20?O\.|P\x20?O)\x20*Box\x20+\d+)|(?:General\x20+Delivery)|(?:C[\\\/]O\x20+(?:\w+\x20*)+))\,?\x20*(?:(?:(?:APT|BLDG|DEPT|FL|HNGR|LOT|PIER|RM|S(?:LIP|PC|T(?:E|OP))|TRLR|UNIT|\x23)\.?\x20*(?:[a-zA-Z0-9\-]+))|(?:BSMT|FRNT|LBBY|LOWR|OFC|PH|REAR|SIDE|UPPR))?)?\,?\s+((?:[A-Za-z]+\x20*)+)\,\s+(A[LKSZRAP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])\s+(\d+(?:-\d+)?)\s*$/
     // this.addressRegex = /(\d+)(?:\x20+[-'0-9A-zÀ-ÿ]+\.?)+?)\,?\x20*?)\-*,?\s+?\,?((?:[A-Za-z]+\x20*)+)\,\s(A[LKSZRAP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])\s+(\d+(?:-\d+)?)*/gm
-    this.addressRegex = /^\s*(\d+)((?:(?:\x20+[-'0-9A-zÀ-ÿ]+\.?)+?)\,?\x20*?)\-*,?\s+?\,?((?:[A-Za-z]+\x20*)+)\,\s(A[LKSZRAP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])\s+(\d+(?:-\d+)?)*/gm
     this.address = null
     this.errors = {}
   }
@@ -33,12 +44,18 @@ class Scraper {
         if (!this.address) {
           this.getAddress()
         }
+        this.getPhoneNumbers()
+        this.getEmails()
         // this.scrapePhotos() 
       } catch (error) {
         this.errors[this.url] = error
       }
     }
-    console.log(this.errors)
+    console.log({
+      address: this.address,
+      phone: this.phoneNumbers,
+      emails: this.emails
+    })
   }
 
   async getPage() {
@@ -71,13 +88,34 @@ class Scraper {
     }
     return `${this.rootdomain}/${cleanPath}`
   }
+  getEmails() {
+    const emails = this.$(this.template ? this.template.phone.selector : 'body').html()
+    const matched = emails.match(this.emailRegex)
+    matched.forEach((e) => {
+      const email = e.toLowerCase()
+      if (!this.emails[email]) {
+        this.emails[email] = { count: 0 }
+      }
+      this.emails[email].count++
+    })
+  }
+  getPhoneNumbers() {
+    const phones = this.$(this.template ? this.template.phone.selector : 'body').text()
+    const matched = phones.match(this.phoneRegex)
+    matched.forEach((p) => { 
+      if (!this.phoneNumbers[p]) {
+        this.phoneNumbers[p] = { count: 0 }
+      }
+      this.phoneNumbers[p].count++
+    })
+  }
   getAddress() {
-    const address = this.$(this.template.address.selector).text().trim().replace(/\r?\n|\r|\t/g, ' ').replace(/\s\s+/g, ' ')
-    this.parsedAddress(address)
+    const addresses =  this.$(this.template ? this.template.address.selector : 'body').text()
+    const matches = addresses.match(this.addressRegex)
+    this.address = this.parsedAddress(matches)
   }
   parsedAddress(address) {
-    const matches = address.match(this.addressRegex)
-    this.address = parser.parseLocation(matches[0])
+    return address ? parser.parseLocation(address[0].replace(/\r?\n|\r|\t/g, ' ').replace(/\s\s+/g, ' ').trim()) : address
   }
 }
 
