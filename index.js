@@ -9,6 +9,7 @@ app.post('/', async (req, res) => {
   const { body } = req
   const scraper = new Scraper(body)
   await scraper.run()
+  
   res.send('Hello')
 })
 
