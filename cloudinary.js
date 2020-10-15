@@ -15,7 +15,11 @@ cloudinary.config({
 module.exports = {
   upload
 }
-
+/**
+ * Cloudinary bulk upload
+ * @param {Array} urls array of Strings of urls
+ * @param {Object} attribs { folder: Sring, tags: Array of Strings }
+ */
 async function upload(urls, attribs) {
   if (!urls || urls.length <= 0) return;
   try {
