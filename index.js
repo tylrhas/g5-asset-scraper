@@ -17,16 +17,6 @@ app.post('/', async (req, res) => {
   }
 })
 
-app.post('/upload', async (req, res) => {
-  const { urls, attribs } = req.body
-  try {
-    const cloudinaryRes = await upload(urls, attribs)
-    res.json(cloudinaryRes)
-  } catch (err) {
-    res.status(500).json(err)
-  }
-})
-
 const port = process.env.PORT || 8080
 
 app.listen(port, () => {
