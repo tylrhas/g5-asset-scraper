@@ -6,11 +6,15 @@ const Scraper = require('./scraper')
 const { upload } = require('./cloudinary')
 
 app.post('/', async (req, res) => {
-  const { body } = req
-  const scraper = new Scraper(body)
-  await scraper.run()
-  const results = scraper.results()
-  res.send(results)
+  try {
+    const { body } = req
+    const scraper = new Scraper(body)
+    await scraper.run()
+    const results = scraper.results()
+    res.send(results) 
+  } catch (error) {
+    res.status(422).send(error.message)
+  }
 })
 
 app.post('/upload', async (req, res) => {

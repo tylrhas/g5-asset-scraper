@@ -3,6 +3,7 @@ const cheerio = require('cheerio')
 const scrapers = require('./scrapers')
 class Scraper {
   constructor(params) {
+    validate(params)
     this.beforeScrape = []
     this.afterScrape = []
     this.beforePageChange = []
@@ -107,5 +108,11 @@ class Scraper {
     return result
   }
 }
-
+function validate (params) {
+  console.log(params)
+  if (!params.rootProtocol && (params.rootProtocol !== 'https' || params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
+  if (!params.pages && Array.isArray(params.pages) && params.pages.length === 0) throw new Error('pages must be a non-empty array')
+  if (!params.scrapers && (typeof params.scrapers === 'object') && yourVariable !== null) throw new Error ('scrapers must be an array of')
+  if (!params.rootdomain && (typeof params.rootdomain === 'string') && params.rootdomain === "") throw new Error('rootdomain must be set and a string') 
+}
 module.exports = Scraper
