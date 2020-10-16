@@ -1,6 +1,6 @@
 module.exports = (Scraper) => {
-  Scraper.addProp('phoneNumbers', {})
-  Scraper.addProp('phoneRegex', /((\(\d{3}\)?)|(\d{3}))([\s-./]?)(\d{3})([\s-./]?)(\d{4})/gm)
+  Scraper.addProp('phoneNumbers', {}, true)
+  Scraper.addProp('phoneRegex', /((\(\d{3}\)?)|(\d{3}))([\s-./]?)(\d{3})([\s-./]?)(\d{4})/gm, false)
   Scraper.addScraper('afterPageChange', scrapePhoneNumbers)
 }
 

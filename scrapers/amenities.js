@@ -1,5 +1,5 @@
 module.exports = (Scraper) => {
-  Scraper.addProp('imageUrls', {})
+  Scraper.addProp('amenities', {}, true)
   Scraper.addScraper('afterPageChange', getAmenities)
 }
 

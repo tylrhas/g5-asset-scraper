@@ -15,6 +15,7 @@ class Scraper {
     this.rootdomain = params.rootdomain
     this.pageSlug = null
     this.scrapers = params.scrapers
+    this.returKeys = []
     // this.template = null
     this.template = {
       address: {
@@ -45,8 +46,9 @@ class Scraper {
   addScraper(hookName, func) {
     this[hookName].push(func)
   }
-  addProp(propName, value){
+  addProp(propName, value, ret = false){
       this[propName] = value
+      if (ret) this.returKeys.push(propName)
   }
   async runBeforeScrape() {
     for (let i = 0 ; i < this.beforeScrape.length; i++) {
@@ -97,8 +99,12 @@ class Scraper {
     this.$ = cheerio.load(this.page)
   }
 
-  parsedAddress(address) {
-    return address ? parser.parseLocation(address[0].replace(/\r?\n|\r|\t/g, ' ').replace(/\s\s+/g, ' ').trim()) : address
+  results() {
+    const result = {
+      errors: this.errors
+    }
+    this.returKeys.forEach(key => result[key] = this[key])
+    return result
   }
 }
 

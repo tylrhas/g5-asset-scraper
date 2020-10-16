@@ -9,8 +9,8 @@ app.post('/', async (req, res) => {
   const { body } = req
   const scraper = new Scraper(body)
   await scraper.run()
-  
-  res.send('Hello')
+  const results = scraper.results()
+  res.send(results)
 })
 
 app.post('/upload', async (req, res) => {
