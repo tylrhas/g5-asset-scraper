@@ -4,7 +4,6 @@ module.exports = {
     '**/__tests__/**/*.[jt]s?(x)',
     '**/?(*.)+(spec|test).[tj]s?(x)',
     '!**/__tests__/config/**',
-    // "!**/__tests__/scraper.spec.js"
    ],
   collectCoverageFrom: [
     '<rootDir>/*.js',
