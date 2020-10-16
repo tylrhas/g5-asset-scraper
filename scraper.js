@@ -46,9 +46,9 @@ class Scraper {
   addScraper(hookName, func) {
     this[hookName].push(func)
   }
-  addProp(propName, value, ret = false){
+  addProp(propName, value, returnProp = false){
       this[propName] = value
-      if (ret) this.returKeys.push(propName)
+      if (returnProp) this.returKeys.push(propName)
   }
   async runBeforeScrape() {
     for (let i = 0 ; i < this.beforeScrape.length; i++) {
