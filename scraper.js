@@ -95,7 +95,6 @@ class Scraper {
   }
 }
 function validate (params) {
-  console.log(params)
   if (!params.rootProtocol && (params.rootProtocol !== 'https' || params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
   if (!params.pages && Array.isArray(params.pages) && params.pages.length === 0) throw new Error('pages must be a non-empty array')
   if (!params.scrapers && (typeof params.scrapers === 'object') && yourVariable !== null) throw new Error ('scrapers must be an array of')
