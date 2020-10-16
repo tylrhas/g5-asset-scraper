@@ -1,0 +1,38 @@
+{
+  "scrapers": {
+      "photos": true,
+      "amenities": true,
+      "address": true,
+      "emails": true,
+      "phoneNumber": true
+  },
+  "template": {
+    "address": {
+      "selector": "#address-block"
+    },
+    "phone": {
+      "selector": "#address-block"
+    },
+    "email": {
+      "selector": "#address-block"
+    },
+    "amenities": {
+      "selector": ".row .wp-block-columns .wp-block-column ul li",
+      "slug": "features-amenities"
+    }
+  },
+  "rootProtocol": "https",
+  "rootdomain" : "solaire8250.com",
+  "pages": [
+  "https://solaire8250.com/floor-plans/",
+  "https://solaire8250.com/",
+  "https://solaire8250.com/#welcomearea",
+  "https://solaire8250.com/features-amenities/",
+  "https://solaire8250.com/neighborhood/",
+  "https://solaire8250.com/floor-plans/",
+  "https://solaire8250.com/contact-us/",
+  "https://solaire8250.com/privacy-policy/",
+  "https://solaire8250.com/gallery/",
+  "https://schedule.tours/kettler/solaire-8250-georgia/schedule",
+  "https://solaire8250.com/virtual-tours/"
+  ]}
