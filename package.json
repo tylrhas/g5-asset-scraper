@@ -20,13 +20,14 @@
   "dependencies": {
     "axios": "^0.20.0",
     "cheerio": "^1.0.0-rc.3",
+    "cloudinary": "^1.23.0",
     "express": "^4.17.1",
-    "parse-address": "^1.1.2",
-    "cloudinary": "^1.23.0"
+    "parse-address": "^1.1.2"
   },
   "devDependencies": {
     "jest": "^26.5.3",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "rewire": "^5.0.0"
   },
   "jest": {
     "testPathIgnorePatterns": [
