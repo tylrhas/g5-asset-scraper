@@ -30,12 +30,20 @@ class Scraper {
         if (this.scrapers[key]) scrapers[key](this)
       })
   }
+  // hookname is string, func will always be function
   addScraper(hookName, func) {
+    if (typeof hookName !== 'string' && typeof func !== 'function') {
+      throw new Error('bad Props: addScraper function')
+    }
     this[hookName].push(func)
   }
-  addProp(propName, value, returnProp = false){
-      this[propName] = value
-      if (returnProp) this.returKeys.push(propName)
+  // propName alwasys string, value doesnt need to be typechecked, boolean
+  addProp(propName, value, returnProp = false) {
+    if (typeof propName !== 'string' && typeof returnProp !== 'boolean') {
+      throw new Error('bad Props: addProp function')
+    }
+    this[propName] = value
+    if (returnProp) this.returKeys.push(propName)
   }
   async runBeforeScrape() {
     for (let i = 0 ; i < this.beforeScrape.length; i++) {
@@ -96,9 +104,9 @@ class Scraper {
 }
 function validate (params) {
   console.log(params)
-  if (!params.rootProtocol && (params.rootProtocol !== 'https' || params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
-  if (!params.pages && Array.isArray(params.pages) && params.pages.length === 0) throw new Error('pages must be a non-empty array')
-  if (!params.scrapers && (typeof params.scrapers === 'object') && yourVariable !== null) throw new Error ('scrapers must be an array of')
-  if (!params.rootdomain && (typeof params.rootdomain === 'string') && params.rootdomain === "") throw new Error('rootdomain must be set and a string') 
+  if (!params.rootProtocol || (params.rootProtocol !== 'https' && params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
+  if (!params.pages || !Array.isArray(params.pages) || params.pages.length === 0) throw new Error('pages must be a non-empty array')
+  if (!params.scrapers || typeof params.scrapers !== 'object') throw new Error ('scrapers must be an object')
+  if (!params.rootdomain || (typeof params.rootdomain !== 'string') || params.rootdomain === "") throw new Error('rootdomain must be set and a string') 
 }
 module.exports = Scraper
