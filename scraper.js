@@ -19,7 +19,7 @@ class Scraper {
     this.returKeys = []
     // this.template = null
     this.template = params.template
-    // adapted from this regex fround on https://regexlib.com/REDetails.aspx?regexp_id=986
+    // adapted from this regex found on https://regexlib.com/REDetails.aspx?regexp_id=986
     // this.addressRegex = /^\s*((?:(?:\d+(?:\x20+\w+\.?)+(?:(?:\x20+STREET|ST|DRIVE|DR|AVENUE|AVE|ROAD|RD|LOOP|COURT|CT|CIRCLE|LANE|LN|BOULEVARD|BLVD)\.?)?)|(?:(?:P\.\x20?O\.|P\x20?O)\x20*Box\x20+\d+)|(?:General\x20+Delivery)|(?:C[\\\/]O\x20+(?:\w+\x20*)+))\,?\x20*(?:(?:(?:APT|BLDG|DEPT|FL|HNGR|LOT|PIER|RM|S(?:LIP|PC|T(?:E|OP))|TRLR|UNIT|\x23)\.?\x20*(?:[a-zA-Z0-9\-]+))|(?:BSMT|FRNT|LBBY|LOWR|OFC|PH|REAR|SIDE|UPPR))?)\,?\s+((?:(?:\d+(?:\x20+\w+\.?)+(?:(?:\x20+STREET|ST|DRIVE|DR|AVENUE|AVE|ROAD|RD|LOOP|COURT|CT|CIRCLE|LANE|LN|BOULEVARD|BLVD)\.?)?)|(?:(?:P\.\x20?O\.|P\x20?O)\x20*Box\x20+\d+)|(?:General\x20+Delivery)|(?:C[\\\/]O\x20+(?:\w+\x20*)+))\,?\x20*(?:(?:(?:APT|BLDG|DEPT|FL|HNGR|LOT|PIER|RM|S(?:LIP|PC|T(?:E|OP))|TRLR|UNIT|\x23)\.?\x20*(?:[a-zA-Z0-9\-]+))|(?:BSMT|FRNT|LBBY|LOWR|OFC|PH|REAR|SIDE|UPPR))?)?\,?\s+((?:[A-Za-z]+\x20*)+)\,\s+(A[LKSZRAP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])\s+(\d+(?:-\d+)?)\s*$/
     // this.addressRegex = /(\d+)(?:\x20+[-'0-9A-zÀ-ÿ]+\.?)+?)\,?\x20*?)\-*,?\s+?\,?((?:[A-Za-z]+\x20*)+)\,\s(A[LKSZRAP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])\s+(\d+(?:-\d+)?)*/gm
     this.errors = {}
@@ -32,15 +32,15 @@ class Scraper {
   }
   // hookname is string, func will always be function
   addScraper(hookName, func) {
-    if (typeof hookName !== 'string' && typeof func !== 'function') {
-      throw new Error('bad Props: addScraper function')
+    if (this[hookName] === undefined || typeof hookName !== 'string' || typeof func !== 'function') {
+      throw new Error('bad params: addScraper function')
     }
     this[hookName].push(func)
   }
-  // propName alwasys string, value doesnt need to be typechecked, boolean
+  // propName always string, value doesnt need to be typechecked, boolean
   addProp(propName, value, returnProp = false) {
-    if (typeof propName !== 'string' && typeof returnProp !== 'boolean') {
-      throw new Error('bad Props: addProp function')
+    if (typeof propName !== 'string' || typeof returnProp !== 'boolean') {
+      throw new Error('bad params: addProp function')
     }
     this[propName] = value
     if (returnProp) this.returKeys.push(propName)
@@ -72,9 +72,8 @@ class Scraper {
       await this.runBeforePageChange()
       try {
         this.url = this.pages[i]
-        const splitUrl = this.url.split('/')
-        this.pageSlug = splitUrl[splitUrl.length -1] === '' ? splitUrl[splitUrl.length -2].trim() : splitUrl[splitUrl.length -1].trim()
-        console.log(this.pageSlug)
+        const splitUrl = this.url.split('/').filter(val => val)
+        this.pageSlug = splitUrl[splitUrl.length -1]
         await this.getPage()
         this.parsePage()
         await this.runAfterPageChange()
