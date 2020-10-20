@@ -30,60 +30,71 @@ describe('Scraper class', () => {
       new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: null })
     }).toThrow('rootdomain must be set and a string')
     
-  }),
+  })
 
   test('constructor prop tests', () => {
     expect(scraper.beforeScrape).toEqual([])
     expect(scraper.afterScrape).toEqual([])
     expect(scraper.beforePageChange).toEqual([])
     expect(scraper.afterPageChange).toEqual([])
-    expect(scraper.pages).toEqual([
-      "https://solaire8250.com/floor-plans/",
-      "https://solaire8250.com/",
-      "https://solaire8250.com/#welcomearea",
-      "https://solaire8250.com/features-amenities/",
-      "https://solaire8250.com/neighborhood/",
-      "https://solaire8250.com/floor-plans/",
-      "https://solaire8250.com/contact-us/",
-      "https://solaire8250.com/privacy-policy/",
-      "https://solaire8250.com/gallery/",
-      "https://schedule.tours/kettler/solaire-8250-georgia/schedule",
-      "https://solaire8250.com/virtual-tours/"
-    ])
+    expect(Array.isArray(scraper.pages)).toEqual(true)
+    expect(scraper.pages.length > 0).toEqual(true)
     expect(scraper.url).toEqual(null)
     expect(scraper.page).toEqual(null)
     expect(scraper.$).toEqual(null)
-    expect(scraper.rootProtocol).toEqual('https')
-    expect(scraper.rootdomain).toEqual('solaire8250.com')
+    expect(scraper.rootProtocol).toEqual('https' || 'http')
+    expect(typeof scraper.rootdomain).toEqual('string')
     expect(scraper.pageSlug).toEqual(null)
-    expect(scraper.scrapers).toEqual({
-      "photos": true,
-      "amenities": true,
-      "address": true,
-      "emails": true,
-      "phoneNumber": true
-    })
+    expect(typeof scraper.scrapers).toEqual('object')
+    expect(Object.keys(scraper.scrapers).length > 0).toEqual(true)
     expect(scraper.returKeys).toEqual([])
-    expect(scraper.template).toEqual({
-      "address": {
-        "selector": "#address-block"
-      },
-      "phone": {
-        "selector": "#address-block"
-      },
-      "email": {
-        "selector": "#address-block"
-      },
-      "amenities": {
-        "selector": ".row .wp-block-columns .wp-block-column ul li",
-        "slug": "features-amenities"
-      }
-    })
+    expect(typeof scraper.template).toEqual('object')
     expect(scraper.errors).toEqual({})
   })
 
   test('includeScrapers', () => {
-    expect(scraper.addressRegex).toEqual(/\\s*(\\d+)((?:(?:\\x20+[-'0-9A-zÀ-ÿ]+\\.?)+?)\\,?\\x20*?)\\-*,?\\s+?\\,?((?:[A-Za-z]+\\x20*)+)\\,\\s(A[LKSZRAP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])\\s+(\\d+(?:-\\d+)?)*/gm)
+    scraper.includeScrapers() // set state bofore assertions
+    expect(scraper.addressRegex instanceof RegExp).toEqual(true)
+    expect(scraper.emailRegex instanceof RegExp).toEqual(true)
+    expect(scraper.phoneRegex instanceof RegExp).toEqual(true)
     expect(scraper.afterPageChange.length).toEqual(Object.keys(scraper.scrapers).length)
+    expect(scraper.afterPageChange.every(func => typeof func === 'function')).toEqual(true)
+    expect(scraper.afterScrape.every(func => typeof func === 'function')).toEqual(true)
+    expect(Array.isArray(scraper.returKeys)).toEqual(true)
+  })
+
+  test('addScraper', () => {  
+    //test passing
+    const func = (x) => x + x
+    scraper.addScraper('beforeScrape', func) 
+    expect(scraper.beforeScrape[0]).toEqual(func)
+    expect(typeof scraper.beforeScrape[0]).toEqual('function')
+    // test failing
+    expect(() => { //not a real hook name
+     scraper.addScraper('notAHookName', func)
+    }).toThrow('bad params: addScraper function')
+    expect(() => { //bad 1st param val
+      scraper.addScraper(1, func)
+    }).toThrow('bad params: addScraper function')
+    expect(() => { //bad 2nd param val
+      scraper.addScraper('beforeScrape', {})
+    }).toThrow('bad params: addScraper function')
+  })
+
+  test('addProp', () => {  
+    //test passing
+    scraper.addProp('testProp', 123, true) 
+    expect(scraper.testProp).toEqual(123)
+    expect(scraper.returKeys.includes('testProp')).toEqual(true)
+
+    scraper.addProp('testProp2', 123, false) 
+    expect(scraper.returKeys.includes('testProp2')).toEqual(false)
+    // test failing
+    expect(() => { //bad 1st param val
+      scraper.addProp(1, 123, false)
+    }).toThrow('bad params: addProp function')
+    expect(() => { //bad 3rd param val
+      scraper.addProp('helloWorld', 123, {})
+    }).toThrow('bad params: addProp function')
   })
 })
