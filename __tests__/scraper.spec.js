@@ -97,4 +97,15 @@ describe('Scraper class', () => {
       scraper.addProp('helloWorld', 123, {})
     }).toThrow('bad params: addProp function')
   })
+
+  describe('Scraper hooks', () => {
+    // jest.mock('../scraper')
+    test('runBeforeScrape', async () => {
+      // add function names to beforeScrape array
+      scraper.beforeScrape.push('getAddress', 'parsedAddress')
+      console.log(scraper.beforeScrape)
+      // await scraper.runBeforeScrape()
+      // console.log(scraper.mock)
+    })
+  })
 })
