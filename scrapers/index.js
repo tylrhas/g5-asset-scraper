@@ -6,7 +6,8 @@ fs.readdirSync(__dirname)
   .forEach(file => {
     const auditName = file.replace('.js','')
     const audit = require(path.join(__dirname, file))
-    audits[auditName] = audit
+    if (!audit.init) throw new Error('Each Scraper needs to have an init function exported')
+    audits[auditName] = audit.init
   })
 
   module.exports = Object.assign(audits)

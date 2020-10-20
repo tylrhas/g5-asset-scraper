@@ -1,5 +1,10 @@
 const parser = require('parse-address')
-module.exports = (Scraper) => {
+module.exports = {
+  init,
+  getAddress,
+  parsedAddress
+}
+  function init(Scraper) {
   Scraper.addProp('addressRegex', /\s*(\d+)((?:(?:\x20+[-'0-9A-zÀ-ÿ]+\.?)+?)\,?\x20*?)\-*,?\s+?\,?((?:[A-Za-z]+\x20*)+)\,\s(A[LKSZRAP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])\s+(\d+(?:-\d+)?)*/gm, false)
   Scraper.addProp('address', null, true)
 

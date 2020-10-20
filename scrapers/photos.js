@@ -1,6 +1,12 @@
 const { upload } = require("../cloudinary")
 
-module.exports = (Scraper) => {
+module.exports = {
+  init,
+  uploadPhotos,
+  scrapePhotos,
+  formatImageUrl
+}  
+function init (Scraper) {
   Scraper.addProp('imageUrls', {})
   Scraper.addScraper('afterPageChange', scrapePhotos)
   Scraper.addScraper('afterScrape', uploadPhotos)
@@ -13,7 +19,7 @@ async function uploadPhotos(scraper) {
     // await upload([imageUrl], { folder: 'testing', tags})
   }
 }
-  function scrapePhotos(scraper) {
+function scrapePhotos(scraper) {
   const urls = [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
     .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))]
   const pageUrl = scraper.url

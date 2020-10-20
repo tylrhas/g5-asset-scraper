@@ -26,8 +26,7 @@
   },
   "devDependencies": {
     "jest": "^26.5.3",
-    "nodemon": "^2.0.4",
-    "rewire": "^5.0.0"
+    "nodemon": "^2.0.4"
   },
   "jest": {
     "testPathIgnorePatterns": [

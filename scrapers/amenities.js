@@ -1,4 +1,9 @@
-module.exports = (Scraper) => {
+module.exports = {
+  init,
+  getAmenities
+}
+
+function init (Scraper) {
   Scraper.addProp('amenities', {}, true)
   Scraper.addScraper('afterPageChange', getAmenities)
 }
