@@ -6,7 +6,6 @@ module.exports = (Scraper) => {
   Scraper.addScraper('afterScrape', uploadPhotos)
 }
 async function uploadPhotos(scraper) {
-  console.log('here')
   const imageUrls = Object.keys(scraper.imageUrls)
   for (let i = 0; i < imageUrls.length; i++) {
     const imageUrl = imageUrls[i]
