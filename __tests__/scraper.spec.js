@@ -103,7 +103,7 @@ describe('Scraper class', () => {
     test('runBeforeScrape', async () => {
       // add function names to beforeScrape array
       scraper.beforeScrape.push('getAddress', 'parsedAddress')
-      console.log(scraper.beforeScrape)
+      // console.log(scraper.beforeScrape)
       // await scraper.runBeforeScrape()
       // console.log(scraper.mock)
     })
