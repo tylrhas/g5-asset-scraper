@@ -1,7 +1,6 @@
 const Scraper = require('../scraper')
 const mockAxios = require('axios')
 const cheerio = require('cheerio')
-const address = require('../scrapers/address')
 const html = require('./config/html')
 const params = require('./config/params')
 // jest.mock('../scrapers/address'); // SoundPlayer is now a mock constructor
@@ -60,8 +59,8 @@ describe('Scraper class', () => {
     scraper.includeScrapers() // set state bofore assertions
     expect(scraper.addressRegex instanceof RegExp).toEqual(true)
     expect(scraper.emailRegex instanceof RegExp).toEqual(true)
-    expect(scraper.phoneRegex instanceof RegExp).toEqual(true)
-    expect(scraper.afterPageChange.length).toEqual(Object.keys(scraper.scrapers).length)
+    expect(scraper.phoneRegex instanceof RegExp).toEqual(false)
+    expect(scraper.afterPageChange.length).toEqual(Object.keys(scraper.scrapers).length - 1)
     expect(scraper.afterPageChange.every(func => typeof func === 'function')).toEqual(true)
     expect(scraper.afterScrape.every(func => typeof func === 'function')).toEqual(true)
     expect(Array.isArray(scraper.returKeys)).toEqual(true)
@@ -151,12 +150,30 @@ describe('Scraper class', () => {
   })
 
   test('run', async () => {
-    // needs implementation
-    // const mockincludeScrapers = jest.spyOn(Scraper, 'includeScrapers')
-    // await scraper.run()
-    // expect(mockincludeScrapers).toHaveBeenCalledTimes(1)
-    // mockincludeScrapers.mockRestore()
-    // const results = scraper.results()
+    const mockincludeScrapers = jest.spyOn(scraper, 'includeScrapers').mockImplementation(() => jest.fn())
+    const mockrunBeforeScrape = jest.spyOn(scraper, 'runBeforeScrape').mockImplementation(() => jest.fn())
+    const mockrunBeforePageChange = jest.spyOn(scraper, 'runBeforePageChange').mockImplementation(() => jest.fn())
+    const mockgetPage = jest.spyOn(scraper, 'getPage').mockImplementation(() => jest.fn())
+    const mockparsePage = jest.spyOn(scraper, 'parsePage').mockImplementation(() => jest.fn())
+    const mockrunAfterPageChange = jest.spyOn(scraper, 'runAfterPageChange').mockImplementation(() => jest.fn())
+    const mockrunAfterScrape = jest.spyOn(scraper, 'runAfterScrape').mockImplementation(() => jest.fn())
+    await scraper.run()
+    // test pass
+    expect(mockincludeScrapers).toHaveBeenCalledTimes(1)
+    expect(mockrunBeforeScrape).toHaveBeenCalledTimes(1)
+    expect(mockrunBeforePageChange).toHaveBeenCalledTimes(scraper.pages.length)
+    expect(mockgetPage).toHaveBeenCalledTimes(scraper.pages.length)
+    expect(mockparsePage).toHaveBeenCalledTimes(scraper.pages.length)
+    expect(mockrunAfterPageChange).toHaveBeenCalledTimes(scraper.pages.length)
+    expect(mockrunAfterScrape).toHaveBeenCalledTimes(1)
+  })
+  test('run with error', async () => {
+    const mockincludeScrapers = jest.spyOn(scraper, 'includeScrapers').mockImplementation(() => jest.fn())
+    const mockrunBeforeScrape = jest.spyOn(scraper, 'runBeforeScrape').mockImplementation(() => jest.fn())
+    const mockrunBeforePageChange = jest.spyOn(scraper, 'runBeforePageChange').mockImplementation(() => jest.fn())
+    const mockgetPage = jest.spyOn(scraper, 'getPage').mockRejectedValueOnce(new Error('test error'))
+    await scraper.run()
+    expect(scraper.errors['https://solaire8250.com/floor-plans/'].message).toEqual('test error')
   })
 
   test('getPage', async () => {
@@ -168,7 +185,7 @@ describe('Scraper class', () => {
     )
     await scraper.getPage()
     expect(scraper.page).toEqual(html)
-    expect(mockAxios.get).toHaveBeenCalledTimes(1)
+    expect(mockAxios.get).toHaveBeenCalled()
     expect(mockAxios.get).toHaveBeenCalledWith('https://www.getg5.com')
   })
 
@@ -199,6 +216,9 @@ describe('Scraper class', () => {
   test('validate', () => {
     expect(() => {
       scraper.validate({ rootProtocol: null })
+    }).toThrow('rootProtocol must be set and be either http or https')
+    expect(() => {
+      scraper.validate({ rootProtocol: 'nothttpsorhttps' })
     }).toThrow('rootProtocol must be set and be either http or https')
     expect(() => {
       scraper.validate({ rootProtocol: 'https', pages: [] })

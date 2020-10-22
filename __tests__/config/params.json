@@ -4,7 +4,7 @@
       "amenities": true,
       "address": true,
       "emails": true,
-      "phoneNumber": true
+      "phoneNumber": false
   },
   "template": {
     "address": {
