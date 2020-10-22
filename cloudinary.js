@@ -12,7 +12,7 @@ cloudinary.config({
   api_secret: CLOUDINARY_SECRET
 })
 
-module.exports = upload
+module.exports = { upload }
 /**
  * Cloudinary bulk upload
  * @param {Array} urls array of Strings of urls

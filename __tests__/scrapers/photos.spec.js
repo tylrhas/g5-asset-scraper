@@ -1,4 +1,5 @@
 const scrapers = require('../../scrapers')
+const cloudinary = require("../../cloudinary")
 // const mockCloudinary = require('../../cloudinary')
  
 describe('Photos Scraper' , () => {
@@ -24,6 +25,11 @@ describe('Photos Scraper' , () => {
     Scraper.page = '<p><img src="https://test.com/testing.jpg"></p>'
     scrapePhotos(Scraper)
     expect(Scraper.imageUrls).toEqual({ 'https://test.com/testing.jpg': [ 'testing.com' ] })
+    
+    Scraper.url = 'https://test.com/testing/testing'
+    scrapePhotos(Scraper)
+    expect(Scraper.imageUrls).toEqual({ 'https://test.com/testing.jpg': [ 'testing.com', 'https://test.com/testing/testing'] })
+
   })
   test('Format Urls', () => {
     const url = formatImageUrl('https://test.com/testing.jpg', "https", 'test.com')
@@ -36,12 +42,11 @@ describe('Photos Scraper' , () => {
     expect(url4).toEqual('https://test.com/testing.jpg')
   })
 
-  // test('Upload Photo', async () => {
-  //   Scraper.imageUrls = { 'https://test.com/testing.jpg': [ 'testing.com' ] }
-  //   await uploadPhotos(Scraper)
-  //   mockCloudinary.mockImplementationOnce(() => jest.fn())
-  //   expect(mockCloudinary).toHaveBeenCalled()
-  //   // .mockImplementation(() => jest.fn())
-  //   // expect(spy).toHaveBeenCalledWith(['https://test.com/testing.jpg'], { folder: 'testing', tags: ['testing.com']})
-  // })
+  test('Upload Photo', async () => {
+    Scraper.imageUrls = { 'https://test.com/testing.jpg': [ 'testing.com' ] }
+    const mockCloudinary = jest.spyOn(cloudinary, 'upload').mockImplementation(() => jest.fn())
+    await uploadPhotos(Scraper)
+    expect(mockCloudinary).toHaveBeenCalled()
+    expect(mockCloudinary).toHaveBeenCalledWith(['https://test.com/testing.jpg'], { folder: 'testing', tags: ['testing.com']})
+  })
 })

@@ -1,4 +1,4 @@
-const { upload } = require("../cloudinary")
+const cloudinary = require("../cloudinary")
 
 module.exports = {
   init,
@@ -16,7 +16,7 @@ async function uploadPhotos(scraper) {
   for (let i = 0; i < imageUrls.length; i++) {
     const imageUrl = imageUrls[i]
     const tags = scraper.imageUrls[imageUrl]
-    await upload([imageUrl], { folder: 'testing', tags})
+    await cloudinary.upload([imageUrl], { folder: 'testing', tags})
   }
 }
 function scrapePhotos(scraper) {
