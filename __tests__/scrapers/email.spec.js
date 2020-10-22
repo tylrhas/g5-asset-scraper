@@ -1,11 +1,11 @@
 const scrapers = require('../../scrapers')
 
-describe('Address Scraper' , () => {
+describe('Email Scraper' , () => {
 
   let Scraper
   beforeEach(() => {
     Scraper = {
-      $: cheerio.load(`<p class="here">test@gmail.com</p> <p>test2@gmail.com</p>`),
+      $: cheerio.load(`<p class="here">test@gmail.com</p> <p>test@gmail.com</p> <p>test2@gmail.com</p>`),
       addScraper: jest.fn(),
       addProp: jest.fn(),
       emails: {},
@@ -14,14 +14,14 @@ describe('Address Scraper' , () => {
   })
   const cheerio = require('cheerio')
   const { init, getEmails } = require('../../scrapers/emails')
-  // test('AddScraper Called with function', () => {
-  //   init(Scraper)
-  //   expect(Scraper.addScraper).toHaveBeenCalledWith('afterPageChange', getEmails)
-  // })
+  test('AddScraper Called with function', () => {
+    init(Scraper)
+    expect(Scraper.addScraper).toHaveBeenCalledWith('afterPageChange', getEmails)
+  })
 
   test('Find Email No Template', () => {
     getEmails(Scraper)
-    expect(Scraper.emails).toEqual({ 'test@gmail.com': { count: 1 } , 'test2@gmail.com': { count: 1 }})
+    expect(Scraper.emails).toEqual({ 'test@gmail.com': { count: 2 } , 'test2@gmail.com': { count: 1 }})
   })
 
   test('Find Email with Template', () => {
