@@ -102,7 +102,6 @@ describe('Scraper class', () => {
     }).toThrow('bad params: addProp function')
   })
 
-<<<<<<< HEAD
   test('runBeforeScrape', async () => {
     await scraper.runBeforeScrape()
     expect(mockFunc1).toHaveBeenCalledTimes(0)
@@ -216,16 +215,5 @@ describe('Scraper class', () => {
     expect(() => {
       scraper.validate({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: null })
     }).toThrow('rootdomain must be set and a string')
-=======
-  describe('Scraper hooks', () => {
-    // jest.mock('../scraper')
-    test('runBeforeScrape', async () => {
-      // add function names to beforeScrape array
-      scraper.beforeScrape.push('getAddress', 'parsedAddress')
-      // console.log(scraper.beforeScrape)
-      // await scraper.runBeforeScrape()
-      // console.log(scraper.mock)
-    })
->>>>>>> 2bf248e2200f92fedb9dd4047646f9a1d4611208
   })
 })
