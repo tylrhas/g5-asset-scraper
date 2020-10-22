@@ -39,10 +39,3 @@ async function upload(urls, attribs) {
     return err
   }
 }
-
-function getImage(id) {}
-
-function update(id, attr) {
-  console.log(`Updating ${id}`)
-  return new Promise((res, rej) => {})
-}

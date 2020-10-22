@@ -16,7 +16,7 @@ async function uploadPhotos(scraper) {
   for (let i = 0; i < imageUrls.length; i++) {
     const imageUrl = imageUrls[i]
     const tags = scraper.imageUrls[imageUrl]
-    // await upload([imageUrl], { folder: 'testing', tags})
+    await upload([imageUrl], { folder: 'testing', tags})
   }
 }
 function scrapePhotos(scraper) {
@@ -35,6 +35,9 @@ function formatImageUrl(url, rootProtocol, rootdomain) {
   if (url.includes('(')) {
     url = url.split('(')[1]
   }
+  if (url.includes(')')) {
+    url = url.split(')')[0]
+  }
   const protocol = /^(http|https)/.test(url)
   if (protocol) {
     return url
@@ -43,7 +46,7 @@ function formatImageUrl(url, rootProtocol, rootdomain) {
   const cleanPath = noProtocol.replace(/^\//, '')
   const isDomain = /\.(com|net|org|biz|ca|info)/.test(cleanPath)
   if (isDomain) {
-    return `${this.rootProtocol}://${cleanPath}`
+    return `${rootProtocol}://${cleanPath}`
   }
-  return `${this.rootdomain}/${cleanPath}`
+  return `${rootProtocol}://${rootdomain}/${cleanPath}`
 }
