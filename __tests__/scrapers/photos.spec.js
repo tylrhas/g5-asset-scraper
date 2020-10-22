@@ -1,5 +1,5 @@
 const scrapers = require('../../scrapers')
-
+// const mockCloudinary = require('../../cloudinary')
  
 describe('Photos Scraper' , () => {
   const cheerio = require('cheerio')
@@ -36,10 +36,12 @@ describe('Photos Scraper' , () => {
     expect(url4).toEqual('https://test.com/testing.jpg')
   })
 
-  test('Upload Photo', () => {
-    Scraper.imageUrls = { 'https://test.com/testing.jpg': [ 'testing.com' ] }
-    console.log(Scraper.imageUrls)
-    // jest.spyOn(require('../../scrapers/photos'), 'upload').mockImplementation(() => jest.fn())
-    // uploadPhotos()
-  })
+  // test('Upload Photo', async () => {
+  //   Scraper.imageUrls = { 'https://test.com/testing.jpg': [ 'testing.com' ] }
+  //   await uploadPhotos(Scraper)
+  //   mockCloudinary.mockImplementationOnce(() => jest.fn())
+  //   expect(mockCloudinary).toHaveBeenCalled()
+  //   // .mockImplementation(() => jest.fn())
+  //   // expect(spy).toHaveBeenCalledWith(['https://test.com/testing.jpg'], { folder: 'testing', tags: ['testing.com']})
+  // })
 })
