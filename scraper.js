@@ -3,7 +3,7 @@ const cheerio = require('cheerio')
 const scrapers = require('./scrapers')
 class Scraper {
   constructor(params) {
-    validate(params)
+    this.validate(params)
     this.beforeScrape = []
     this.afterScrape = []
     this.beforePageChange = []
@@ -17,7 +17,6 @@ class Scraper {
     this.pageSlug = null
     this.scrapers = params.scrapers
     this.returKeys = []
-    // this.template = null
     this.template = params.template
     // adapted from this regex found on https://regexlib.com/REDetails.aspx?regexp_id=986
     // this.addressRegex = /^\s*((?:(?:\d+(?:\x20+\w+\.?)+(?:(?:\x20+STREET|ST|DRIVE|DR|AVENUE|AVE|ROAD|RD|LOOP|COURT|CT|CIRCLE|LANE|LN|BOULEVARD|BLVD)\.?)?)|(?:(?:P\.\x20?O\.|P\x20?O)\x20*Box\x20+\d+)|(?:General\x20+Delivery)|(?:C[\\\/]O\x20+(?:\w+\x20*)+))\,?\x20*(?:(?:(?:APT|BLDG|DEPT|FL|HNGR|LOT|PIER|RM|S(?:LIP|PC|T(?:E|OP))|TRLR|UNIT|\x23)\.?\x20*(?:[a-zA-Z0-9\-]+))|(?:BSMT|FRNT|LBBY|LOWR|OFC|PH|REAR|SIDE|UPPR))?)\,?\s+((?:(?:\d+(?:\x20+\w+\.?)+(?:(?:\x20+STREET|ST|DRIVE|DR|AVENUE|AVE|ROAD|RD|LOOP|COURT|CT|CIRCLE|LANE|LN|BOULEVARD|BLVD)\.?)?)|(?:(?:P\.\x20?O\.|P\x20?O)\x20*Box\x20+\d+)|(?:General\x20+Delivery)|(?:C[\\\/]O\x20+(?:\w+\x20*)+))\,?\x20*(?:(?:(?:APT|BLDG|DEPT|FL|HNGR|LOT|PIER|RM|S(?:LIP|PC|T(?:E|OP))|TRLR|UNIT|\x23)\.?\x20*(?:[a-zA-Z0-9\-]+))|(?:BSMT|FRNT|LBBY|LOWR|OFC|PH|REAR|SIDE|UPPR))?)?\,?\s+((?:[A-Za-z]+\x20*)+)\,\s+(A[LKSZRAP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])\s+(\d+(?:-\d+)?)\s*$/
@@ -52,7 +51,7 @@ class Scraper {
   }
   async runAfterScrape() {
     for (let i = 0 ; i < this.afterScrape.length; i++) {
-      this.afterScrape[i](this)
+      await this.afterScrape[i](this)
     }
   }
  async runBeforePageChange() {
@@ -99,11 +98,13 @@ class Scraper {
     this.returKeys.forEach(key => result[key] = this[key])
     return result
   }
+
+  validate (params) {
+    if (!params.rootProtocol || (params.rootProtocol !== 'https' && params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
+    if (!params.pages || !Array.isArray(params.pages) || params.pages.length === 0) throw new Error('pages must be a non-empty array')
+    if (!params.scrapers || typeof params.scrapers !== 'object') throw new Error ('scrapers must be an object')
+    if (!params.rootdomain || (typeof params.rootdomain !== 'string') || params.rootdomain === "") throw new Error('rootdomain must be set and a string') 
+  }
 }
-function validate (params) {
-  if (!params.rootProtocol || (params.rootProtocol !== 'https' && params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
-  if (!params.pages || !Array.isArray(params.pages) || params.pages.length === 0) throw new Error('pages must be a non-empty array')
-  if (!params.scrapers || typeof params.scrapers !== 'object') throw new Error ('scrapers must be an object')
-  if (!params.rootdomain || (typeof params.rootdomain !== 'string') || params.rootdomain === "") throw new Error('rootdomain must be set and a string') 
-}
+
 module.exports = Scraper

@@ -1,16 +1,21 @@
 const Scraper = require('../scraper')
 const mockAxios = require('axios')
+const cheerio = require('cheerio')
+const address = require('../scrapers/address')
 const html = require('./config/html')
 const params = require('./config/params')
+// jest.mock('../scrapers/address'); // SoundPlayer is now a mock constructor
 
 describe('Scraper class', () => {
 
-  let scraper
+  let scraper, mockFunc1, mockFunc2
   beforeEach(() => {
     scraper = new Scraper(params)
+    mockFunc1 = jest.fn()
+    mockFunc2 = jest.fn()
   })
 
-  test('invalid constructor params', () => {
+  test('bad constructor params', () => {
     expect(() => {
       new Scraper({ rootProtocol: null })
     }).toThrow('rootProtocol must be set and be either http or https')
@@ -29,7 +34,6 @@ describe('Scraper class', () => {
     expect(() => {
       new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: null })
     }).toThrow('rootdomain must be set and a string')
-    
   })
 
   test('constructor prop tests', () => {
@@ -98,14 +102,118 @@ describe('Scraper class', () => {
     }).toThrow('bad params: addProp function')
   })
 
-  describe('Scraper hooks', () => {
-    // jest.mock('../scraper')
-    test('runBeforeScrape', async () => {
-      // add function names to beforeScrape array
-      scraper.beforeScrape.push('getAddress', 'parsedAddress')
-      console.log(scraper.beforeScrape)
-      // await scraper.runBeforeScrape()
-      // console.log(scraper.mock)
-    })
+  test('runBeforeScrape', async () => {
+    await scraper.runBeforeScrape()
+    expect(mockFunc1).toHaveBeenCalledTimes(0)
+    expect(mockFunc2).toHaveBeenCalledTimes(0)
+    scraper.beforeScrape.push(mockFunc1, mockFunc2)
+    await scraper.runBeforeScrape()
+    expect(mockFunc1).toHaveBeenCalledTimes(1)
+    expect(mockFunc1).toHaveBeenCalledWith(scraper)
+    expect(mockFunc2).toHaveBeenCalledTimes(1)
+    expect(mockFunc2).toHaveBeenCalledWith(scraper)
+  })
+
+  test('runAfterScrape', async () => {
+    await scraper.runAfterScrape()
+    expect(mockFunc1).toHaveBeenCalledTimes(0)
+    expect(mockFunc2).toHaveBeenCalledTimes(0)
+    scraper.afterScrape.push(mockFunc1, mockFunc2)
+    await scraper.runAfterScrape()
+    expect(mockFunc1).toHaveBeenCalledTimes(1)
+    expect(mockFunc1).toHaveBeenCalledWith(scraper)
+    expect(mockFunc2).toHaveBeenCalledTimes(1)
+    expect(mockFunc2).toHaveBeenCalledWith(scraper)
+  })
+
+  test('runBeforePageChange', async () => {
+    await scraper.runBeforePageChange()
+    expect(mockFunc1).toHaveBeenCalledTimes(0)
+    expect(mockFunc2).toHaveBeenCalledTimes(0)
+    scraper.beforePageChange.push(mockFunc1, mockFunc2)
+    await scraper.runBeforePageChange()
+    expect(mockFunc1).toHaveBeenCalledTimes(1)
+    expect(mockFunc1).toHaveBeenCalledWith(scraper)
+    expect(mockFunc2).toHaveBeenCalledTimes(1)
+    expect(mockFunc2).toHaveBeenCalledWith(scraper)
+  })
+
+  test('runAfterPageChange', async () => {
+    await scraper.runAfterPageChange()
+    expect(mockFunc1).toHaveBeenCalledTimes(0)
+    expect(mockFunc2).toHaveBeenCalledTimes(0)
+    scraper.afterPageChange.push(mockFunc1, mockFunc2)
+    await scraper.runAfterPageChange()
+    expect(mockFunc1).toHaveBeenCalledTimes(1)
+    expect(mockFunc1).toHaveBeenCalledWith(scraper)
+    expect(mockFunc2).toHaveBeenCalledTimes(1)
+    expect(mockFunc2).toHaveBeenCalledWith(scraper)
+  })
+
+  test('run', async () => {
+    // needs implementation
+    // const mockincludeScrapers = jest.spyOn(Scraper, 'includeScrapers')
+    // await scraper.run()
+    // expect(mockincludeScrapers).toHaveBeenCalledTimes(1)
+    // mockincludeScrapers.mockRestore()
+    // const results = scraper.results()
+  })
+
+  test('getPage', async () => {
+    scraper.url = 'https://www.getg5.com'
+    mockAxios.get.mockImplementationOnce(() =>
+      Promise.resolve({
+        data: html
+      })
+    )
+    await scraper.getPage()
+    expect(scraper.page).toEqual(html)
+    expect(mockAxios.get).toHaveBeenCalledTimes(1)
+    expect(mockAxios.get).toHaveBeenCalledWith('https://www.getg5.com')
+  })
+
+  test('parsePage', async () => {
+    scraper.page = html
+    const spy = jest.spyOn(cheerio, 'load')
+    await scraper.parsePage()
+    expect(spy).toHaveBeenCalled()
+    expect(typeof scraper.$).toEqual('function')
+    expect(spy).toHaveBeenCalledWith(html)
+    spy.mockRestore()
+  })
+
+  test('results', () => {
+    scraper.errors['getg5.com'] = 'bad page'
+    scraper.address = {}
+    scraper.amenities = {}
+    scraper.returKeys.push('address', 'amenities')
+    const results = scraper.results()
+    expect(results).toHaveProperty('errors')
+    expect(results).toHaveProperty('address')
+    expect(results).toHaveProperty('amenities')
+    expect(results.errors).toEqual({'getg5.com': 'bad page'})
+    expect(results.errors['getg5.com']).toEqual('bad page')
+
+  })
+
+  test('validate', () => {
+    expect(() => {
+      scraper.validate({ rootProtocol: null })
+    }).toThrow('rootProtocol must be set and be either http or https')
+    expect(() => {
+      scraper.validate({ rootProtocol: 'https', pages: [] })
+    }).toThrow('pages must be a non-empty array')
+    expect(() => {
+      scraper.validate({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: null })
+    }).toThrow('scrapers must be an object')
+    expect(() => {
+      scraper.validate({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: '' })
+    }).toThrow('rootdomain must be set and a string')
+    expect(() => {
+      scraper.validate({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: 1 })
+    }).toThrow('rootdomain must be set and a string')
+    expect(() => {
+      scraper.validate({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: null })
+    }).toThrow('rootdomain must be set and a string')
   })
 })
