@@ -68,7 +68,7 @@ class Scraper {
   }
 
   async sendBuffer(pageIndex, log, results, errors) {
-    const progress = pageIndex + 1 / this.pages.length
+    const progress = (pageIndex + 1) / this.pages.length
     const dataBuffer = Buffer.from(JSON.stringify({
       progress,
       complete: this.complete,
