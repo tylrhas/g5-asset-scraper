@@ -1,9 +1,13 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
 const scrapers = require('./scrapers')
+const { PubSub } = require('@google-cloud/pubsub');
+const { GCP_PROJECT_ID: projectId } = process.env
 class Scraper {
   constructor(params) {
     this.validate(params)
+    this.topicName = params.topicName
+    this.pubSubClient = new PubSub({ projectId })
     this.beforeScrape = []
     this.afterScrape = []
     this.beforePageChange = []
@@ -18,9 +22,7 @@ class Scraper {
     this.scrapers = params.scrapers
     this.returKeys = []
     this.template = params.template
-    // adapted from this regex found on https://regexlib.com/REDetails.aspx?regexp_id=986
-    // this.addressRegex = /^\s*((?:(?:\d+(?:\x20+\w+\.?)+(?:(?:\x20+STREET|ST|DRIVE|DR|AVENUE|AVE|ROAD|RD|LOOP|COURT|CT|CIRCLE|LANE|LN|BOULEVARD|BLVD)\.?)?)|(?:(?:P\.\x20?O\.|P\x20?O)\x20*Box\x20+\d+)|(?:General\x20+Delivery)|(?:C[\\\/]O\x20+(?:\w+\x20*)+))\,?\x20*(?:(?:(?:APT|BLDG|DEPT|FL|HNGR|LOT|PIER|RM|S(?:LIP|PC|T(?:E|OP))|TRLR|UNIT|\x23)\.?\x20*(?:[a-zA-Z0-9\-]+))|(?:BSMT|FRNT|LBBY|LOWR|OFC|PH|REAR|SIDE|UPPR))?)\,?\s+((?:(?:\d+(?:\x20+\w+\.?)+(?:(?:\x20+STREET|ST|DRIVE|DR|AVENUE|AVE|ROAD|RD|LOOP|COURT|CT|CIRCLE|LANE|LN|BOULEVARD|BLVD)\.?)?)|(?:(?:P\.\x20?O\.|P\x20?O)\x20*Box\x20+\d+)|(?:General\x20+Delivery)|(?:C[\\\/]O\x20+(?:\w+\x20*)+))\,?\x20*(?:(?:(?:APT|BLDG|DEPT|FL|HNGR|LOT|PIER|RM|S(?:LIP|PC|T(?:E|OP))|TRLR|UNIT|\x23)\.?\x20*(?:[a-zA-Z0-9\-]+))|(?:BSMT|FRNT|LBBY|LOWR|OFC|PH|REAR|SIDE|UPPR))?)?\,?\s+((?:[A-Za-z]+\x20*)+)\,\s+(A[LKSZRAP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])\s+(\d+(?:-\d+)?)\s*$/
-    // this.addressRegex = /(\d+)(?:\x20+[-'0-9A-zÀ-ÿ]+\.?)+?)\,?\x20*?)\-*,?\s+?\,?((?:[A-Za-z]+\x20*)+)\,\s(A[LKSZRAP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])\s+(\d+(?:-\d+)?)*/gm
+    this.complete = false
     this.errors = {}
   }
   includeScrapers () {
@@ -64,12 +66,27 @@ class Scraper {
       await this.afterPageChange[i](this)
     }
   }
+
+  async sendBuffer(pageIndex, log, results, errors) {
+    const progress = pageIndex + 1 / this.pages.length
+    const dataBuffer = Buffer.from(JSON.stringify({
+      progress,
+      complete: this.complete,
+      log,
+      results,
+      errors
+     }))
+     await this.pubSubClient.topic(this.topicName)
+      .publish({data: dataBuffer, orderingKey: 'assetScraper' })
+  }
+
   async run() {
     this.includeScrapers()
     await this.runBeforeScrape()
     for (let i = 0; i < this.pages.length; i++) {
       await this.runBeforePageChange()
       try {
+        await this.sendBuffer(i, this.pages[i], null, null)
         this.url = this.pages[i]
         const splitUrl = this.url.split('/').filter(val => val)
         this.pageSlug = splitUrl[splitUrl.length -1]
@@ -78,9 +95,13 @@ class Scraper {
         await this.runAfterPageChange()
       } catch (error) {
         this.errors[this.url] = error
+        await this.sendBuffer(i, null, null, error)
       }
     }
     await this.runAfterScrape()
+    this.complete = true
+    const results = this.results()
+    await this.sendBuffer(1, null, results, null)
   }
   async getPage() {
     const req = await axios.get(this.url)
