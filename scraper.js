@@ -78,7 +78,7 @@ class Scraper {
      }))
      console.log(dataBuffer, `I am a buffer: ${Buffer.isBuffer(dataBuffer)}`)
      await this.pubSubClient.topic(this.topicName, { enableMessageOrdering: true })
-      .publish({data: dataBuffer, orderingKey: 'assetScraper' })
+      .publishMessage({data: dataBuffer, orderingKey: 'assetScraper' })
   }
 
   async run() {
