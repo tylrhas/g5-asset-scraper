@@ -76,6 +76,7 @@ class Scraper {
       results,
       errors
      }))
+     console.log(dataBuffer, typeof dataBuffer)
      await this.pubSubClient.topic(this.topicName)
       .publish({data: dataBuffer, orderingKey: 'assetScraper' })
   }
