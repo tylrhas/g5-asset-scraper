@@ -96,7 +96,7 @@ class Scraper {
         await this.runAfterPageChange()
       } catch (error) {
         this.errors[this.url] = error
-        console.log(error)
+        console.log(`error: ${error.message}`)
         await this.sendBuffer(i, null, null, error)
       }
     }
