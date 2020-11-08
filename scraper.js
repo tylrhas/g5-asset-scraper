@@ -1,13 +1,15 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
 const scrapers = require('./scrapers')
-const { PubSub } = require('@google-cloud/pubsub');
+const { PubSub } = require('@google-cloud/pubsub')
 const { GCP_PROJECT_ID: projectId } = process.env
+const pubSubClient = new PubSub({ projectId })
+
 class Scraper {
   constructor(params) {
     this.validate(params)
     this.topicName = params.topicName
-    this.pubSubClient = new PubSub({ projectId })
+    this.pubSubClient = pubSubClient
     this.beforeScrape = []
     this.afterScrape = []
     this.beforePageChange = []
@@ -76,9 +78,14 @@ class Scraper {
       results,
       errors
      }))
-     console.log(dataBuffer, `I am a buffer: ${Buffer.isBuffer(dataBuffer)}`, `progress: ${progress}`)
+    //  console.log(dataBuffer, `I am a buffer: ${Buffer.isBuffer(dataBuffer)}`, `progress: ${progress}`)
      await this.pubSubClient.topic(this.topicName, { enableMessageOrdering: true })
       .publishMessage({data: dataBuffer, orderingKey: 'assetScraper' })
+  }
+
+  getPageSlug() {
+    const splitUrl = this.url.split('/').filter(val => val)
+    return splitUrl[splitUrl.length -1]
   }
 
   async run() {
@@ -87,23 +94,27 @@ class Scraper {
     for (let i = 0; i < this.pages.length; i++) {
       await this.runBeforePageChange()
       try {
-        await this.sendBuffer(i, this.pages[i], null, null)
+        if (this.topicName) {
+          await this.sendBuffer(i, this.pages[i], null, null)
+        }
         this.url = this.pages[i]
-        const splitUrl = this.url.split('/').filter(val => val)
-        this.pageSlug = splitUrl[splitUrl.length -1]
+        this.pageSlug = this.getPageSlug()
         await this.getPage()
         this.parsePage()
         await this.runAfterPageChange()
       } catch (error) {
         this.errors[this.url] = error
-        console.log(`error: ${error.message}`)
-        await this.sendBuffer(i, null, null, error)
+        if (this.topicName) {
+          await this.sendBuffer(i, null, null, error)
+        }
       }
     }
     await this.runAfterScrape()
     this.complete = true
-    const results = this.results()
-    await this.sendBuffer(1, null, results, null)
+    if (this.topicName) {
+      const results = this.results()
+      await this.sendBuffer(1, null, results, null)
+    }
   }
   async getPage() {
     const req = await axios.get(this.url)

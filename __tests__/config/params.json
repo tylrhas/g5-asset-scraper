@@ -1,4 +1,5 @@
 {
+  "topicName": "assetScraper_1",
   "scrapers": {
       "photos": true,
       "amenities": true,

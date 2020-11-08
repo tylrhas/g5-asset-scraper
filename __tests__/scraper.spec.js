@@ -3,7 +3,8 @@ const mockAxios = require('axios')
 const cheerio = require('cheerio')
 const html = require('./config/html')
 const params = require('./config/params')
-// jest.mock('../scrapers/address'); // SoundPlayer is now a mock constructor
+const { PubSub } = require('@google-cloud/pubsub')
+
 
 describe('Scraper class', () => {
 
@@ -149,10 +150,23 @@ describe('Scraper class', () => {
     expect(mockFunc2).toHaveBeenCalledWith(scraper)
   })
 
+  test('send buffer', async () => {
+    const mockProjectId = 12345
+    const pubSubClient = new PubSub({ mockProjectId })
+    scraper.pubSubClient = pubSubClient
+    const spyTopic = jest.spyOn(pubSubClient, 'topic')
+    const spyPublishMessage = jest.spyOn(pubSubClient, 'publishMessage')
+    await scraper.sendBuffer(1, 'www.test.com', null, null)
+    expect(spyTopic).toHaveBeenCalledTimes(1)
+    expect(spyTopic).toHaveBeenCalledWith(scraper.topicName, { enableMessageOrdering: true })
+    expect(spyPublishMessage).toHaveBeenCalledTimes(1)
+  })
+
   test('run', async () => {
     const mockincludeScrapers = jest.spyOn(scraper, 'includeScrapers').mockImplementation(() => jest.fn())
     const mockrunBeforeScrape = jest.spyOn(scraper, 'runBeforeScrape').mockImplementation(() => jest.fn())
     const mockrunBeforePageChange = jest.spyOn(scraper, 'runBeforePageChange').mockImplementation(() => jest.fn())
+    const mockSendBuffer = jest.spyOn(scraper, 'sendBuffer').mockImplementation(() => jest.fn())
     const mockgetPage = jest.spyOn(scraper, 'getPage').mockImplementation(() => jest.fn())
     const mockparsePage = jest.spyOn(scraper, 'parsePage').mockImplementation(() => jest.fn())
     const mockrunAfterPageChange = jest.spyOn(scraper, 'runAfterPageChange').mockImplementation(() => jest.fn())
@@ -162,18 +176,55 @@ describe('Scraper class', () => {
     expect(mockincludeScrapers).toHaveBeenCalledTimes(1)
     expect(mockrunBeforeScrape).toHaveBeenCalledTimes(1)
     expect(mockrunBeforePageChange).toHaveBeenCalledTimes(scraper.pages.length)
+    expect(mockSendBuffer).toHaveBeenCalledTimes(scraper.pages.length + 1)
     expect(mockgetPage).toHaveBeenCalledTimes(scraper.pages.length)
     expect(mockparsePage).toHaveBeenCalledTimes(scraper.pages.length)
     expect(mockrunAfterPageChange).toHaveBeenCalledTimes(scraper.pages.length)
     expect(mockrunAfterScrape).toHaveBeenCalledTimes(1)
   })
+
+  test('run wihtout topicName', async () => {
+    scraper.topicName = null
+    const mockincludeScrapers = jest.spyOn(scraper, 'includeScrapers').mockImplementation(() => jest.fn())
+    const mockrunBeforeScrape = jest.spyOn(scraper, 'runBeforeScrape').mockImplementation(() => jest.fn())
+    const mockrunBeforePageChange = jest.spyOn(scraper, 'runBeforePageChange').mockImplementation(() => jest.fn())
+    const mockSendBuffer = jest.spyOn(scraper, 'sendBuffer').mockImplementation(() => jest.fn())
+    const mockgetPage = jest.spyOn(scraper, 'getPage').mockImplementation(() => jest.fn())
+    const mockparsePage = jest.spyOn(scraper, 'parsePage').mockImplementation(() => jest.fn())
+    const mockrunAfterPageChange = jest.spyOn(scraper, 'runAfterPageChange').mockImplementation(() => jest.fn())
+    const mockrunAfterScrape = jest.spyOn(scraper, 'runAfterScrape').mockImplementation(() => jest.fn())
+    await scraper.run()
+    // test pass
+    expect(mockincludeScrapers).toHaveBeenCalledTimes(1)
+    expect(mockrunBeforeScrape).toHaveBeenCalledTimes(1)
+    expect(mockrunBeforePageChange).toHaveBeenCalledTimes(scraper.pages.length)
+    expect(mockSendBuffer).toHaveBeenCalledTimes(0)
+    expect(mockgetPage).toHaveBeenCalledTimes(scraper.pages.length)
+    expect(mockparsePage).toHaveBeenCalledTimes(scraper.pages.length)
+    expect(mockrunAfterPageChange).toHaveBeenCalledTimes(scraper.pages.length)
+    expect(mockrunAfterScrape).toHaveBeenCalledTimes(1)
+  })
+
   test('run with error', async () => {
     const mockincludeScrapers = jest.spyOn(scraper, 'includeScrapers').mockImplementation(() => jest.fn())
     const mockrunBeforeScrape = jest.spyOn(scraper, 'runBeforeScrape').mockImplementation(() => jest.fn())
+    const mockSendBuffer = jest.spyOn(scraper, 'sendBuffer').mockImplementation(() => jest.fn())
     const mockrunBeforePageChange = jest.spyOn(scraper, 'runBeforePageChange').mockImplementation(() => jest.fn())
     const mockgetPage = jest.spyOn(scraper, 'getPage').mockRejectedValueOnce(new Error('test error'))
     await scraper.run()
     expect(scraper.errors['https://solaire8250.com/floor-plans/'].message).toEqual('test error')
+  })
+
+  test('run error without topic name', async () => {
+    scraper.topicName = null
+    const mockincludeScrapers = jest.spyOn(scraper, 'includeScrapers').mockImplementation(() => jest.fn())
+    const mockrunBeforeScrape = jest.spyOn(scraper, 'runBeforeScrape').mockImplementation(() => jest.fn())
+    const mockSendBuffer = jest.spyOn(scraper, 'sendBuffer').mockImplementation(() => jest.fn())
+    const mockrunBeforePageChange = jest.spyOn(scraper, 'runBeforePageChange').mockImplementation(() => jest.fn())
+    const mockgetPage = jest.spyOn(scraper, 'getPage').mockRejectedValueOnce(new Error('test error'))
+    await scraper.run()
+    expect(scraper.errors['https://solaire8250.com/floor-plans/'].message).toEqual('test error')
+    expect(mockSendBuffer).toHaveBeenCalledTimes(0)
   })
 
   test('getPage', async () => {
