@@ -10,8 +10,8 @@ app.post('/', async (req, res) => {
     const { body } = req
     const scraper = new Scraper(body)
     scraper.run()
-    // const results = scraper.results()
-    res.sendStatus(200) 
+    const results = scraper.results()
+    res.sendStatus(results) 
   } catch (error) {
     res.status(422).send(error.message)
   }
