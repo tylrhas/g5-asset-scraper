@@ -5,12 +5,11 @@ class PubSubMock {
   }
 
   topic(topic) {
-    // you can implement here the logic
-    return this;
+    return this
   }
 
   publishMessage(body, obj) {
-    return this;
+    return this
   }
 }
 

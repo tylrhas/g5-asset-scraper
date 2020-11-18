@@ -3,13 +3,17 @@ const cheerio = require('cheerio')
 const scrapers = require('./scrapers')
 const { PubSub } = require('@google-cloud/pubsub')
 const { GCP_PROJECT_ID: projectId } = process.env
-const pubSubClient = new PubSub({ projectId })
 
+/**
+ * Scrapes websites for assets (address, imeages, amentiies, emails)
+ *
+ * @class Scraper
+ */
 class Scraper {
   constructor(params) {
     this.validate(params)
     this.topicName = params.topicName
-    this.pubSubClient = pubSubClient
+    this.pubSubClient = new PubSub({ projectId })
     this.beforeScrape = []
     this.afterScrape = []
     this.beforePageChange = []
@@ -78,7 +82,6 @@ class Scraper {
       results,
       errors
      }))
-    //  console.log(dataBuffer, `I am a buffer: ${Buffer.isBuffer(dataBuffer)}`, `progress: ${progress}`)
      await this.pubSubClient.topic(this.topicName, { enableMessageOrdering: true })
       .publishMessage({data: dataBuffer, orderingKey: 'assetScraper' })
   }
@@ -95,7 +98,7 @@ class Scraper {
       await this.runBeforePageChange()
       try {
         if (this.topicName) {
-          await this.sendBuffer(i, this.pages[i], null, null)
+          this.sendBuffer(i, this.pages[i], null, null)
         }
         this.url = this.pages[i]
         this.pageSlug = this.getPageSlug()
@@ -105,7 +108,7 @@ class Scraper {
       } catch (error) {
         this.errors[this.url] = error
         if (this.topicName) {
-          await this.sendBuffer(i, null, null, error)
+          this.sendBuffer(i, null, null, error)
         }
       }
     }
@@ -113,7 +116,7 @@ class Scraper {
     this.complete = true
     if (this.topicName) {
       const results = this.results()
-      await this.sendBuffer(1, null, results, null)
+      this.sendBuffer(1, null, results, null)
     }
   }
   async getPage() {
