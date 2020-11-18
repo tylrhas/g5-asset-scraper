@@ -74,7 +74,7 @@ class Scraper {
     }
   }
 
-  async sendBuffer(pageIndex, log, results, errors) {
+  sendBuffer(pageIndex, log, results, errors) {
     const progress = (pageIndex + 1) / this.pages.length
     const dataBuffer = Buffer.from(JSON.stringify({
       progress,
@@ -83,7 +83,7 @@ class Scraper {
       results,
       errors
      }))
-     await this.pubSubClient.topic(this.topicName, { enableMessageOrdering: true })
+     this.pubSubClient.topic(this.topicName, { enableMessageOrdering: true })
       .publishMessage({data: dataBuffer, orderingKey: 'assetScraper' })
   }
 
