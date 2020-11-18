@@ -29,6 +29,7 @@ class Scraper {
     this.returKeys = []
     this.template = params.template
     this.complete = false
+    this.config = params.scraperConfig
     this.errors = {}
   }
   includeScrapers () {
