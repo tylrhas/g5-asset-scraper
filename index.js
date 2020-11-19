@@ -8,10 +8,18 @@ const { upload } = require('./cloudinary')
 app.post('/', async (req, res) => {
   try {
     const { body } = req
-    const scraper = new Scraper(body)
-    scraper.run()
-    // const results = scraper.results()
-    res.sendStatus(200) 
+    if (body.topicName) {
+      const scraper = new Scraper(body)
+      scraper.run()
+      // const results = scraper.results()
+      res.sendStatus(200) 
+    } else {
+      const scraper = new Scraper(body)
+      await scraper.run()
+      const results = scraper.results()
+      res.json(results) 
+    }
+
   } catch (error) {
     res.status(422).send(error.message)
   }
