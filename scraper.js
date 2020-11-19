@@ -70,7 +70,11 @@ class Scraper {
   }
   async runAfterPageChange() {
     for (let i = 0 ; i < this.afterPageChange.length; i++) {
-      await this.afterPageChange[i](this)
+      try {
+        await this.afterPageChange[i](this) 
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
