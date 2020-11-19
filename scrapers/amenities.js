@@ -10,6 +10,8 @@ function init (Scraper) {
 
 function getAmenities(scraper) {
   if (scraper.template && scraper.template.amenities.slug === scraper.pageSlug) {
-     scraper.amenities = scraper.$(scraper.template.amenities.selector).map((i, el) => scraper.$(el).text()).get()
+     scraper.amenities = scraper.$(scraper.template.amenities.selector).map((i, el) => {
+      return scraper.$(el).text().replace(/\s\s+/gm, ' ').trim()
+     }).get().filter(a => a)
   }
 }
