@@ -12,9 +12,11 @@ module.exports = {
 }
 
 function getAddress(scraper) {
-  const addresses =  scraper.$(scraper.template ? scraper.template.address.selector : 'body').text()
+  const addresses =  scraper.$('body').text()
   const matches = addresses.match(scraper.addressRegex)
-  scraper.address = parsedAddress(matches)
+  if (matches) {
+    scraper.address = parsedAddress(matches)
+  }
 }
 
 function parsedAddress(address) {

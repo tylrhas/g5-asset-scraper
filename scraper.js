@@ -12,7 +12,7 @@ const { GCP_PROJECT_ID: projectId } = process.env
 class Scraper {
   constructor(params) {
     this.validate(params)
-    this.topicName = params.topicName
+    this.topicName = params.topicName || null
     this.pubSubClient = new PubSub({ projectId })
     this.beforeScrape = []
     this.afterScrape = []

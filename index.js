@@ -9,9 +9,9 @@ app.post('/', async (req, res) => {
   try {
     const { body } = req
     const scraper = new Scraper(body)
-    scraper.run()
+    await scraper.run()
     const results = scraper.results()
-    res.sendStatus(results) 
+    res.json(results) 
   } catch (error) {
     res.status(422).send(error.message)
   }

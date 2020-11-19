@@ -9,7 +9,7 @@ module.exports = {
 function init (Scraper) {
   Scraper.addProp('imageUrls', {})
   Scraper.addScraper('afterPageChange', scrapePhotos)
-  Scraper.addScraper('afterScrape', uploadPhotos)
+  // Scraper.addScraper('afterScrape', uploadPhotos)
 }
 async function uploadPhotos(scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
