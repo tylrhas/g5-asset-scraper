@@ -8,6 +8,7 @@ const { upload } = require('./cloudinary')
 app.post('/', async (req, res) => {
   try {
     const { body } = req
+    console.log(body.topicName)
     if (body.topicName) {
       const scraper = new Scraper(body)
       scraper.run()
