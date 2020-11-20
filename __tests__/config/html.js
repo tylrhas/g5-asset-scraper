@@ -21,6 +21,9 @@ module.exports = `
       <div><strong>Hey!</strong> Download our new State of the Industry Report</div>
     </div>
   </div>
+  <div class="social-links">
+    <a href="https://www.facebook.com/M2-Apartment-Homes" class="facebook" title="Facebook" rel="me" target="_blank" aria-label="Visit Facebook page"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.m2apartments.com/#footer-icon-facebook"></use></svg></a><a href="https://twitter.com/M2apts" class="twitter" title="Twitter" rel="me" target="_blank" aria-label="Visit Twitter page"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.m2apartments.com/#footer-icon-twitter"></use></svg></a><a href="https://www.yelp.com/biz/m2-denver" class="yelp" title="Yelp" rel="me" target="_blank" aria-label="Visit Yelp page"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.m2apartments.com/#footer-icon-yelp"></use></svg></a><a href="https://www.google.com/maps?cid=13190717218527977044" class="google-my-business" title="Google My Business" rel="me" target="_blank" aria-label="Google this business"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.m2apartments.com/#footer-icon-gmb"></use></svg></a><a href="https://www.pinterest.com/m2apartments" class="pinterest" title="Pinterest" rel="me" target="_blank" aria-label="Visit Pinterest page"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.m2apartments.com/#footer-icon-pinterest"></use></svg></a>
+  </div>
   <div class="reveal brandit" id="modal-scroll" data-reveal>
     <img src="https://www.getg5.com/wp-content/uploads/2018/08/g5_2018_trademarked_logo-300x300.png" />
   </div>

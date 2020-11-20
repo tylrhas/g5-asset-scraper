@@ -13,19 +13,19 @@ function init(Scraper) {
 }
 
 function getAddress(scraper) {
-  const addresses = scraper.$(scraper.template.address.selector ? scraper.template.address.selector : 'body').text()
-  const arrAddresses = addresses.replace(/\s\s+/gm, ' ')
-    .match(/.{0,50}\b\d{5}(?:-\d{4})?\b/g)
-  if (arrAddresses.length > 0) {
-    arrAddresses.forEach(address => {
-      const matches = address.match(scraper.addressRegex)
-      if (matches) {
-        scraper.address = parsedAddress(matches)
-      }
-    });
-  }
+  // const addresses = scraper.$(scraper.template.address.selector ? scraper.template.address.selector : 'body').text()
+  // const arrAddresses = addresses.replace(/\s\s+/gm, ' ')
+  //   .match(/.{0,50}\b\d{5}(?:-\d{4})?\b/g)
+  // if (arrAddresses.length > 0) {
+  //   arrAddresses.forEach(address => {
+  //     const matches = address.match(scraper.addressRegex)
+  //     if (matches) {
+  //       scraper.address = parsedAddress(matches)
+  //     }
+  //   });
+  // }
 }
 
 function parsedAddress(address) {
-  return address ? parser.parseLocation(address[0].replace(/\r?\n|\r|\t/g, ' ').replace(/\s\s+/g, ' ').trim()) : address
+  // return address ? parser.parseLocation(address[0].replace(/\r?\n|\r|\t/g, ' ').replace(/\s\s+/g, ' ').trim()) : address
 }

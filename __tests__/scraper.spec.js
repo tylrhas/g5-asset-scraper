@@ -58,10 +58,10 @@ describe('Scraper class', () => {
 
   test('includeScrapers', () => {
     scraper.includeScrapers() // set state bofore assertions
-    expect(scraper.addressRegex instanceof RegExp).toEqual(true)
+    // expect(scraper.addressRegex instanceof RegExp).toEqual(true)
     expect(scraper.emailRegex instanceof RegExp).toEqual(true)
     expect(scraper.phoneRegex instanceof RegExp).toEqual(false)
-    expect(scraper.afterPageChange.length).toEqual(Object.keys(scraper.scrapers).length - 1)
+    expect(scraper.afterPageChange.length).toEqual(Object.keys(scraper.scrapers).length - 2)
     expect(scraper.afterPageChange.every(func => typeof func === 'function')).toEqual(true)
     expect(scraper.afterScrape.every(func => typeof func === 'function')).toEqual(true)
     expect(Array.isArray(scraper.returKeys)).toEqual(true)

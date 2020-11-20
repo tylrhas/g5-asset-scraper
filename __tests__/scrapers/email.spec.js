@@ -20,6 +20,7 @@ describe('Email Scraper' , () => {
   })
 
   test('Find Email No Template', () => {
+    Scraper.template = { email : { selector: null } }
     getEmails(Scraper)
     expect(Scraper.emails).toEqual({ 'test@gmail.com': { count: 2 } , 'test2@gmail.com': { count: 1 }})
   })

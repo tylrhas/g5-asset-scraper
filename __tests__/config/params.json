@@ -5,7 +5,8 @@
       "amenities": true,
       "address": true,
       "emails": true,
-      "phoneNumber": false
+      "phoneNumber": false,
+      "social": true
   },
   "template": {
     "address": {
@@ -16,6 +17,9 @@
     },
     "email": {
       "selector": "#address-block"
+    },
+    "social": {
+      "selector": ".social-links"
     },
     "amenities": {
       "selector": ".row .wp-block-columns .wp-block-column ul li",

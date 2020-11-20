@@ -1,5 +1,3 @@
-const parser = require('parse-address')
-
 const socialMap = {
     yelp: /(?:https?:)?\/\/(?:[A-z]+\.)?yelp.com\/biz\/([A-z0-9-]+)\/?/gm,
     facebook: /(?:http:\/\/)?(?:www\.)?facebook\.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[\w\-]*\/)*([\w\-]*)/gm,
@@ -7,13 +5,17 @@ const socialMap = {
     pinterest: /(?:https?:)?\/\/(?:[A-z]+\.)?pinterest.com\/([A-z0-9-]+)\/?/gm,
     instagram: /(?:https?:)?\/\/(?:[A-z]+\.)?instagram.com\/([A-z0-9-]+)\/?/gm,
     youtube: /(?:https?:)?\/\/(?:[A-z]+\.)?youtube.com\/user\/([A-z0-9-]+)\/?/gm,
-    linkedin: /(?:https?:)?\/\/(?:[A-z]+\.)?linkedin.com\/in\/([A-z0-9-]+)\/?/gm
-  }
-  module.exports = {
-    init,
-    getSocialLinks,
-    socialMap
-  }
+    linkedin: /(?:https?:)?\/\/(?:[A-z]+\.)?linkedin.com\/(in|company)\/([A-z0-9-]+)\/?/gm,
+    tumblr: /(?:https?:)?\/\/(?:[A-z]+\.)?tumblr.com\/?/gm
+}
+
+module.exports = {
+  init,
+  getSocialLinks,
+  socialMap,
+  compareLinks
+}
+
 function init (Scraper) {
   Scraper.addProp('socialLinks', {}, true)
   Scraper.addProp('socialMap', socialMap, false)
@@ -22,8 +24,8 @@ function init (Scraper) {
 
 function getSocialLinks(scraper) {
   if (scraper.template.social.selector) {
-    const socialLinks = scraper.$(scraper.template.social.selector).text()
-    compareLinks(socialLinks)
+    const html = scraper.$(scraper.template.social.selector).html()
+    compareLinks(html, scraper)
   } else {
     const socialLinks = scraper.$('a').toArray()
     socialLinks.forEach((anchor) => { 
