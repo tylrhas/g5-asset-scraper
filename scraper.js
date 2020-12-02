@@ -118,7 +118,6 @@ class Scraper {
       }
     }
     await this.runAfterScrape()
-    console.log(Object.keys(this.imageUrls))
     this.complete = true
     if (this.topicName) {
       const results = this.results()
