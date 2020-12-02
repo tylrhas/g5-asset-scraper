@@ -13,16 +13,22 @@ function init (Scraper) {
 }
 async function uploadPhotos(scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
+  const uploads = []
   for (let i = 0; i < imageUrls.length; i++) {
     try {
       const imageUrl = imageUrls[i]
       const tags = scraper.imageUrls[imageUrl]
-      const url = await cloudinary.upload(imageUrl, { folder: scraper.config.photos.folder, tags})
-      console.log('uploaded')
+      uploads.push(cloudinary.upload(imageUrl, { folder: scraper.config.photos.folder, tags}))
     } catch (error) {
       console.log(error)
     }
   }
+  return Promise.all(uploads)
+    .catch(function(err) {
+      // log that I have an error, return the entire array;
+      console.log('A promise failed to resolve', err);
+      return uploads;
+  })
 }
 function scrapePhotos(scraper) {
   const urls = [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
