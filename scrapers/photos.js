@@ -9,14 +9,19 @@ module.exports = {
 function init (Scraper) {
   Scraper.addProp('imageUrls', {}, true)
   Scraper.addScraper('afterPageChange', scrapePhotos)
-  // Scraper.addScraper('afterScrape', uploadPhotos)
+  Scraper.addScraper('afterScrape', uploadPhotos)
 }
 async function uploadPhotos(scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
   for (let i = 0; i < imageUrls.length; i++) {
-    const imageUrl = imageUrls[i]
-    const tags = scraper.imageUrls[imageUrl]
-    await cloudinary.upload([imageUrl], { folder: scraper.config.photos.folder, tags})
+    try {
+      const imageUrl = imageUrls[i]
+      const tags = scraper.imageUrls[imageUrl]
+      const url = await cloudinary.upload(imageUrl, { folder: scraper.config.photos.folder, tags})
+      console.log('uploaded')
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 function scrapePhotos(scraper) {

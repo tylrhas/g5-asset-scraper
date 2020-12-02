@@ -18,22 +18,15 @@ module.exports = { upload }
  * @param {Array} urls array of Strings of urls
  * @param {Object} attribs { folder: Sring, tags: Array of Strings }
  */
-async function upload(urls, attribs) {
-  if (!urls || urls.length <= 0) return;
-  try {
-    return await Promise.all(urls.map((url) => {
-      return new Promise((res, rej) => {
-        cloudinary.uploader.upload(url, attribs, function (err, response) {
-          if (!err) {
-            res(response)
-          } else {
-            rej(err)
-          }
-        })
-      })
-    }))
-  } catch (err) {
-    console.error(err)
-    return err
-  }
+async function upload(url, attribs) {
+  if (!url) return;
+  return new Promise((res, rej) => {
+    cloudinary.uploader.upload(url, attribs, function (err, response) {
+      if (!err) {
+        res(response)
+      } else {
+        rej(err)
+      }
+    })
+  })
 }
