@@ -1,7 +1,6 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
 const scrapers = require('./scrapers')
-const { PubSub } = require('@google-cloud/pubsub')
 const { GCP_PROJECT_ID: projectId } = process.env
 
 /**
@@ -12,8 +11,6 @@ const { GCP_PROJECT_ID: projectId } = process.env
 class Scraper {
   constructor(params) {
     this.validate(params)
-    this.topicName = params.topicName || null
-    this.pubSubClient = new PubSub({ projectId })
     this.beforeScrape = []
     this.afterScrape = []
     this.beforePageChange = []
@@ -78,19 +75,6 @@ class Scraper {
     }
   }
 
-  sendBuffer(pageIndex, log, results, errors) {
-    const progress = Math.floor((pageIndex + 1) / this.pages.length)
-    const dataBuffer = Buffer.from(JSON.stringify({
-      progress,
-      complete: this.complete,
-      log,
-      results,
-      errors
-     }))
-     this.pubSubClient.topic(this.topicName, { enableMessageOrdering: true })
-      .publishMessage({data: dataBuffer, orderingKey: 'assetScraper' })
-  }
-
   getPageSlug() {
     const splitUrl = this.url.split('/').filter(val => val)
     return splitUrl[splitUrl.length -1]
@@ -102,9 +86,6 @@ class Scraper {
     for (let i = 0; i < this.pages.length; i++) {
       await this.runBeforePageChange()
       try {
-        if (this.topicName) {
-          this.sendBuffer(i, this.pages[i], null, null)
-        }
         this.url = this.pages[i]
         this.pageSlug = this.getPageSlug()
         await this.getPage()
@@ -112,17 +93,10 @@ class Scraper {
         await this.runAfterPageChange()
       } catch (error) {
         this.errors[this.url] = error
-        if (this.topicName) {
-          this.sendBuffer(i, null, null, error)
-        }
       }
     }
     await this.runAfterScrape()
     this.complete = true
-    if (this.topicName) {
-      const results = this.results()
-      this.sendBuffer(1, null, results, null)
-    }
   }
   async getPage() {
     const req = await axios.get(this.url)
@@ -142,6 +116,7 @@ class Scraper {
   }
 
   validate (params) {
+    console.log(params, params.rootdomain)
     if (!params.rootProtocol || (params.rootProtocol !== 'https' && params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
     if (!params.pages || !Array.isArray(params.pages) || params.pages.length === 0) throw new Error('pages must be a non-empty array')
     if (!params.scrapers || typeof params.scrapers !== 'object') throw new Error ('scrapers must be an object')
