@@ -30,6 +30,12 @@ npm run dev
         "phoneNumber": true,
         "social": true
     },
+    "template": {
+        "address": { "selector": null },
+        "phone": { "selector": null },
+        "email": { "selector": null },
+        "amenities": { "selector": null, "slug": null } 
+    },
     "config": {
         "photos": {
             "folder": "parentDir/childDir"
