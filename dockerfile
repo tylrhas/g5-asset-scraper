@@ -1,7 +1,8 @@
 FROM node:12
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm install
+COPY ./src /usr/src/app/src
 RUN npm run build
 COPY ./dist ./
-CMD [ "npm", "start" ]
+CMD [ "node", "index.js" ]

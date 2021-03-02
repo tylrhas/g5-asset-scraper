@@ -1,4 +1,6 @@
+import '@babel/polyfill'
 require('dotenv').config()
+
 import express from 'express'
 import {json } from 'body-parser'
 import Scraper from './scraper'
@@ -11,9 +13,7 @@ app.get('/', (req, res) => res.status(200).send('I\'m Listening.'))
 
 app.post('/', async (req, res) => {
   try {
-    const { body } = req
-    console.log(req.body)
-    const scraper = new Scraper(body)
+    const scraper = new Scraper(req.body)
     await scraper.run()
     const results = scraper.results()
     res.json(results) 

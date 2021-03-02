@@ -2,7 +2,7 @@
   "name": "g5-asset-scraper",
   "version": "1.1.0",
   "description": "Scrape assets and upload to Cloudinary",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "config": {
     "imageName": "asset-scraper",
     "imageRepo": "g5opex/asset-scraper"
@@ -13,8 +13,8 @@
     "docker:build": "docker build -t $npm_package_config_imageName .",
     "docker:tag": "docker tag $npm_package_config_imageName $npm_package_config_imageRepo:$npm_package_version",
     "docker:push": "docker push $npm_package_config_imageRepo:$npm_package_version",
-    "start": "NODE_ENV=production node ./dist/index.js",
-    "prestart": "npm build",
+    "start": "NODE_ENV=production node dist/index.js",
+    "prestart": "npm run build",
     "dev": "nodemon --exec babel-node src/index.js",
     "test": "jest"
   },
@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/tylrhas/g5-asset-scraper#readme",
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
     "axios": "^0.20.0",
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
