@@ -1,9 +1,10 @@
-import { get } from 'axios'
+import https from 'https'
+import axios from 'axios'
 import { load } from 'cheerio'
 import scrapers from './scrapers'
 
 /**
- * Scrapes websites for assets (address, imeages, amentiies, emails)
+ * Scrapes websites for assets
  * @class Scraper
  */
 class Scraper {
@@ -140,7 +141,9 @@ class Scraper {
    * @memberof Scraper
    */
   async getPage () {
-    const req = await get(this.url)
+    const req = await axios.get(this.url, {
+      httpsAgent: new https.Agent({ rejectUnauthorized: false })
+    })
     this.page = req.data
   }
 
