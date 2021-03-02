@@ -1,4 +1,4 @@
-const Scraper = require('../scraper')
+const Scraper = require('../src/scraper')
 const mockAxios = require('axios')
 const cheerio = require('cheerio')
 const html = require('./config/html')
