@@ -1,4 +1,4 @@
-const parser = require('parse-address')
+// const parser = require('parse-address')
 module.exports = {
   init,
   getAddress,

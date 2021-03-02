@@ -18,7 +18,13 @@ async function uploadPhotos(scraper) {
     try {
       const imageUrl = imageUrls[i]
       const tags = scraper.imageUrls[imageUrl]
-      uploads.push(cloudinary.upload(imageUrl, { folder: scraper.config.photos.folder, tags}))
+      const attribs = {
+        folder: scraper.config.photos.folder,
+        auto_tagging: 0.8,
+        context: `alt=test description|sources=${tags.join(',')}`
+      }
+      console.log({ imageUrl, attribs })
+      uploads.push(cloudinary.upload(imageUrl, attribs))
     } catch (error) {
       console.log(error)
     }
