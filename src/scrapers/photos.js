@@ -18,7 +18,6 @@ export async function uploadPhotos (scraper) {
         // auto_tagging: 0.8,
         context: `sources=${tags.join(',')}`
       }
-      // console.log({ imageUrl, attribs })
       uploads.push(upload(imageUrl, attribs))
     } catch (error) {
       console.log(error)
