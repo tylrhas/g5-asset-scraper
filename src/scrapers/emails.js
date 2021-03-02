@@ -4,7 +4,7 @@ export function init (Scraper) {
   Scraper.addScraper('afterPageChange', getEmails)
 }
 
-export function getEmails(scraper) {
+export function getEmails (scraper) {
   const emails = scraper.$(scraper.template.email.selector ? scraper.template.email.selector : 'body').html()
   const matched = emails.match(scraper.emailRegex)
   if (matched) {
