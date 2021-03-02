@@ -29,6 +29,9 @@ class Scraper {
     this.errors = {}
   }
 
+  /**
+   * @memberof Scraper
+   */
   includeScrapers () {
     Object.keys(this.scrapers)
       .forEach((key) => {
