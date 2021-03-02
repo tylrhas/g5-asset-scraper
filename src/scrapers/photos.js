@@ -1,17 +1,12 @@
-const cloudinary = require("../cloudinary")
+import { upload } from "../cloudinary"
 
-module.exports = {
-  init,
-  uploadPhotos,
-  scrapePhotos,
-  formatImageUrl
-}  
-function init (Scraper) {
+export function init (Scraper) {
   Scraper.addProp('imageUrls', {}, true)
   Scraper.addScraper('afterPageChange', scrapePhotos)
   Scraper.addScraper('afterScrape', uploadPhotos)
 }
-async function uploadPhotos(scraper) {
+
+export async function uploadPhotos (scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
   const uploads = []
   for (let i = 0; i < imageUrls.length; i++) {
@@ -20,26 +15,30 @@ async function uploadPhotos(scraper) {
       const tags = scraper.imageUrls[imageUrl]
       const attribs = {
         folder: scraper.config.photos.folder,
-        auto_tagging: 0.8,
-        context: `alt=test description|sources=${tags.join(',')}`
+        // auto_tagging: 0.8,
+        context: `sources=${tags.join(',')}`
       }
-      console.log({ imageUrl, attribs })
-      uploads.push(cloudinary.upload(imageUrl, attribs))
+      // console.log({ imageUrl, attribs })
+      uploads.push(upload(imageUrl, attribs))
     } catch (error) {
       console.log(error)
     }
   }
+
   return Promise.all(uploads)
-    .catch(function(err) {
-      // log that I have an error, return the entire array;
-      console.log('A promise failed to resolve', err);
-      return uploads;
+    .catch((err) => {
+      console.log('A promise failed to resolve', err)
+      return uploads
   })
 }
-function scrapePhotos(scraper) {
-  const urls = [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
-    .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))]
-  const pageUrl = scraper.url
+
+export function scrapePhotos (scraper) {
+  const { page, url: pageUrl, rootProtocol, rootDomain } = scraper 
+  const pattern = /([^="'])+\.(jpg|gif|png|jpeg|pdf)/gm
+  const urls = [
+    ...new Set(page.match(pattern).map(url => formatImageUrl(url, rootProtocol, rootDomain)))
+  ]
+
   urls.forEach((url) => {
     if (!scraper.imageUrls[url]) {
       scraper.imageUrls[url] = []
@@ -48,7 +47,7 @@ function scrapePhotos(scraper) {
   })
 }
 
-function formatImageUrl(url, rootProtocol, rootdomain) {
+export function formatImageUrl (url, rootProtocol, rootDomain) {
   if (url.includes('(')) {
     url = url.split('(')[1]
   }
@@ -65,5 +64,5 @@ function formatImageUrl(url, rootProtocol, rootdomain) {
   if (isDomain) {
     return `${rootProtocol}://${cleanPath}`
   }
-  return `${rootProtocol}://${rootdomain}/${cleanPath}`
+  return `${rootProtocol}://${rootDomain}/${cleanPath}`
 }

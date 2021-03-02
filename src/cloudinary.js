@@ -1,4 +1,4 @@
-const cloudinary = require('cloudinary').v2
+import { v2 as cloudinary } from 'cloudinary'
 
 const {
   CLOUDINARY_NAME,
@@ -12,22 +12,15 @@ cloudinary.config({
   api_secret: CLOUDINARY_SECRET
 })
 
-module.exports = {
-  /**
-   * Cloudinary bulk upload
-   * @param {String} urls array of Strings of urls
-   * @param {Object} attribs { folder: Sring, tags: Array of Strings }
-   */
-  upload: async function (url, attribs) {
-    if (!url) return;
-    return new Promise((res, rej) => {
-      cloudinary.uploader.upload(url, attribs, function (err, response) {
-        if (!err) {
-          res(response)
-        } else {
-          rej(err)
-        }
-      })
+export async function upload (url, attribs) {
+  if (!url) return;
+  return new Promise((res, rej) => {
+    cloudinary.uploader.upload(url, attribs, function (err, response) {
+      if (!err) {
+        res(response)
+      } else {
+        rej(err)
+      }
     })
-  }
+  })
 }
