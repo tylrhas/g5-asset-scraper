@@ -1,10 +1,8 @@
-const axios = require('axios')
-const cheerio = require('cheerio')
-const scrapers = require('./scrapers')
+import { get } from 'axios'
+import { load } from 'cheerio'
+import scrapers from './scrapers'
 // const { PubSub } = require('@google-cloud/pubsub')
 // const { GCP_PROJECT_ID: projectId } = process.env
-
-module.exports = Scraper
 
 /**
  * Scrapes websites for assets (address, imeages, amentiies, emails)
@@ -165,7 +163,7 @@ class Scraper {
    * @memberof Scraper
    */
   async getPage () {
-    const req = await axios.get(this.url)
+    const req = await get(this.url)
     this.page = req.data
   }
 
@@ -173,7 +171,7 @@ class Scraper {
    * @memberof Scraper
    */
   async parsePage () {
-    this.$ = cheerio.load(this.page)
+    this.$ = load(this.page)
   }
 
   /**
@@ -199,3 +197,5 @@ class Scraper {
     if (!params.rootdomain || (typeof params.rootdomain !== 'string') || params.rootdomain === "") throw new Error('rootdomain must be set and a string') 
   }
 }
+
+export default Scraper
