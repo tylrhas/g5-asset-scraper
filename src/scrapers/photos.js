@@ -32,7 +32,7 @@ export async function uploadPhotos (scraper) {
 }
 
 export function scrapePhotos (scraper) {
-  const { page, url: pageUrl, rootProtocol, rootDomain } = scraper 
+  const { page, url: pageUrl, rootProtocol, rootDomain } = scraper
   const pattern = /([^="'])+\.(jpg|gif|png|jpeg|pdf)/gm
   const urls = [
     ...new Set(page.match(pattern).map(url => formatImageUrl(url, rootProtocol, rootDomain)))
