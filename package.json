@@ -22,8 +22,7 @@
     "cheerio": "^1.0.0-rc.5",
     "cloudinary": "^1.23.0",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "parse-address": "^1.1.2"
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "jest": "^26.6.3",
