@@ -1,39 +1,47 @@
-const cloudinary = require("../cloudinary")
+const cloudinary = require('../cloudinary')
 
 module.exports = {
   init,
   uploadPhotos,
   scrapePhotos,
   formatImageUrl
-}  
+}
+
 function init (Scraper) {
   Scraper.addProp('imageUrls', {}, true)
   Scraper.addScraper('afterPageChange', scrapePhotos)
   Scraper.addScraper('afterScrape', uploadPhotos)
 }
-async function uploadPhotos(scraper) {
+
+async function uploadPhotos (scraper) {
   const imageUrls = Object.keys(scraper.imageUrls)
   const uploads = []
   for (let i = 0; i < imageUrls.length; i++) {
     try {
       const imageUrl = imageUrls[i]
       const tags = scraper.imageUrls[imageUrl]
-      uploads.push(cloudinary.upload(imageUrl, { folder: scraper.config.photos.folder, tags}))
+      const attribs = {
+        folder: scraper.config.photos.folder,
+        // auto_tagging: 0.8,
+        context: `sources=${tags.join(',')}`
+      }
+      uploads.push(cloudinary.upload(imageUrl, attribs))
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
-  return Promise.all(uploads)
-    .catch(function(err) {
-      // log that I have an error, return the entire array;
-      console.log('A promise failed to resolve', err);
-      return uploads;
+  return Promise.all(uploads).catch((err) => {
+    console.log('A promise failed to resolve', err)
+    return uploads
   })
 }
-function scrapePhotos(scraper) {
-  const urls = [...new Set(scraper.page.match(/([^="'])+\.(jpg|gif|png|jpeg)/gm)
-    .map(url => formatImageUrl(url, scraper.rootProtocol, scraper.rootdomain)))]
-  const pageUrl = scraper.url
+
+function scrapePhotos (scraper) {
+  const pattern = /([^="'])+\.(jpg|gif|png|jpeg|pdf)/gm
+  const { page, url: pageUrl, rootProtocol, rootdomain } = scraper
+  const urls = [
+    ...new Set(page.match(pattern).map(url => formatImageUrl(url, rootProtocol, rootdomain)))
+  ]
   urls.forEach((url) => {
     if (!scraper.imageUrls[url]) {
       scraper.imageUrls[url] = []
@@ -42,7 +50,7 @@ function scrapePhotos(scraper) {
   })
 }
 
-function formatImageUrl(url, rootProtocol, rootdomain) {
+function formatImageUrl (url, rootProtocol, rootdomain) {
   if (url.includes('(')) {
     url = url.split('(')[1]
   }

@@ -13,12 +13,13 @@ cloudinary.config({
 })
 
 module.exports = { upload }
+
 /**
  * Cloudinary bulk upload
  * @param {String} urls array of Strings of urls
- * @param {Object} attribs { folder: Sring, tags: Array of Strings }
+ * @param {Object} attribs { folder: String, tags: Array of Strings }
  */
-async function upload(url, attribs) {
+async function upload (url, attribs) {
   if (!url) return;
   return new Promise((res, rej) => {
     cloudinary.uploader.upload(url, attribs, function (err, response) {
