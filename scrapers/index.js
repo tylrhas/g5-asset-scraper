@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const audits = {}
+
 fs.readdirSync(__dirname)
   .filter(file => file.indexOf('.') !== 0 && file !== 'index.js' && file !== 'README.md')
   .forEach(file => {
@@ -10,4 +11,4 @@ fs.readdirSync(__dirname)
     audits[auditName] = audit.init
   })
 
-  module.exports = Object.assign(audits)
+module.exports = Object.assign(audits)
