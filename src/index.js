@@ -2,7 +2,7 @@ import '@babel/polyfill'
 require('dotenv').config()
 
 import express from 'express'
-import {json } from 'body-parser'
+import { json } from 'body-parser'
 import Scraper from './scraper'
 
 const app = express()
