@@ -24,6 +24,7 @@ class Scraper {
     this.returKeys = []
     this.template = params.template
     this.complete = false
+    this.vertical = params.vertical
     this.config = params.config
     this.errors = {}
   }
@@ -121,7 +122,8 @@ class Scraper {
   }
 
   validate (params) {
-    console.log(params, params.rootdomain)
+    const validVertical = ['MF', 'SS', 'SL']
+    if (!params.vertical || !validVertical.includes(params.vertical )) throw new Error ('invalid vertical')
     if (!params.rootProtocol || (params.rootProtocol !== 'https' && params.rootProtocol !== 'http')) throw new Error('rootProtocol must be set and be either http or https')
     if (!params.pages || !Array.isArray(params.pages) || params.pages.length === 0) throw new Error('pages must be a non-empty array')
     if (!params.scrapers || typeof params.scrapers !== 'object') throw new Error ('scrapers must be an object')
