@@ -1,13 +1,11 @@
 require('dotenv').config()
 const express = require('express')
-const bodyParser = require('body-parser')
 const app = express()
-app.use(bodyParser.json({ limit: '1000kb' }))
+app.use(express.json({ limit: '1000kb' }))
 const Scraper = require('./scraper')
-const { upload } = require('./cloudinary')
 
 app.post('/', async (req, res) => {
-  const {body} = req
+  const { body } = req
   try {
     const scraper = new Scraper(body)
     await scraper.run()
@@ -22,5 +20,5 @@ app.post('/', async (req, res) => {
 const port = process.env.PORT || 8080
 
 app.listen(port, () => {
-  console.log(`Listening on port ${port}`)
+  console.log(`Listening on port :${port}`)
 })

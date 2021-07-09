@@ -1,11 +1,9 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
 const scrapers = require('./scrapers')
-const { GCP_PROJECT_ID: projectId } = process.env
 
 /**
  * Scrapes websites for assets (address, imeages, amentiies, emails)
- *
  * @class Scraper
  */
 class Scraper {
@@ -29,19 +27,21 @@ class Scraper {
     this.config = params.config
     this.errors = {}
   }
+
   includeScrapers () {
     Object.keys(this.scrapers)
       .forEach((key) => {
         if (this.scrapers[key]) scrapers[key](this)
       })
   }
-  // hookname is string, func will always be function
-  addScraper(hookName, func) {
+
+  addScraper (hookName, func) {
     if (this[hookName] === undefined || typeof hookName !== 'string' || typeof func !== 'function') {
       throw new Error('bad params: addScraper function')
     }
     this[hookName].push(func)
   }
+
   // propName always string, value doesnt need to be typechecked, boolean
   addProp(propName, value, returnProp = false) {
     if (typeof propName !== 'string' || typeof returnProp !== 'boolean') {
@@ -50,22 +50,26 @@ class Scraper {
     this[propName] = value
     if (returnProp) this.returKeys.push(propName)
   }
+
   async runBeforeScrape() {
     for (let i = 0 ; i < this.beforeScrape.length; i++) {
       await this.beforeScrape[i](this)
     }
   }
-  async runAfterScrape() {
+
+  async runAfterScrape () {
     for (let i = 0 ; i < this.afterScrape.length; i++) {
       await this.afterScrape[i](this)
     }
   }
- async runBeforePageChange() {
+
+ async runBeforePageChange () {
     for (let i = 0 ; i < this.beforePageChange.length; i++) {
       await this.beforePageChange[i](this)
     }
   }
-  async runAfterPageChange() {
+
+  async runAfterPageChange () {
     for (let i = 0 ; i < this.afterPageChange.length; i++) {
       try {
         await this.afterPageChange[i](this) 
@@ -75,12 +79,12 @@ class Scraper {
     }
   }
 
-  getPageSlug() {
+  getPageSlug () {
     const splitUrl = this.url.split('/').filter(val => val)
     return splitUrl[splitUrl.length -1]
   }
 
-  async run() {
+  async run () {
     this.includeScrapers()
     await this.runBeforeScrape()
     for (let i = 0; i < this.pages.length; i++) {
@@ -98,16 +102,17 @@ class Scraper {
     await this.runAfterScrape()
     this.complete = true
   }
-  async getPage() {
+
+  async getPage () {
     const req = await axios.get(this.url)
     this.page = req.data
   }
 
-  async parsePage() {
+  async parsePage () {
     this.$ = cheerio.load(this.page)
   }
 
-  results() {
+  results () {
     const result = {
       errors: this.errors
     }
