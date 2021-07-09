@@ -1,0 +1,48 @@
+module.exports = {
+  MF: {
+    apartment: {
+      'air conditioning': { variants: ['air conditioner', 'ac'] },
+      'cable included': { variants: ['cable'] },
+      'custom cabinetry': { variants: ['custom cab'] },
+      'dishwasher': { variants: ['dish washer', 'dishwashing machine', 'dishwashing', 'dishwashing machine', 'dishwashing', 'dishwashing machine'] },
+      'energy-efficient appliances': { variants: ['energy efficient utilities', 'energy efficient appliances'] },
+      'fireplace': { variants: [] },
+      'garages available': { variants: ['garage'] },
+      'granite counters': { variants: [] },
+      'hardwood flooring': { variants: [] },
+      'high ceilings': { variants: ['highceilings', 'high ceiling'] },
+      'high speed internet access': { variants: ['high speed internet'] },
+      'private balcony': { variants: [] },
+      'private patio': { variants: [] },
+      'soundproof walls': { variants: [] },
+      'stainless-steel appliances': { variants: [] },
+      'vaulted ceilings': { variants: [] },
+      'walk-in closet': { variants: ['walk in closets'] },
+      'washer/dryer connections': { variants: ['washer and dryer connections', 'washer dryer'] },
+      'wood-style flooring': { variants: [] }
+    },
+    community: {
+      'basketball court': { variants: [] },
+      'community garden': { variants: [] },
+      'business center': { variants: [] },
+      'close to dog park': { variants: [] },
+      'gated electronic entrance': { variants: [] },
+      'laundry facility': { variants: ['laundry'] },
+      'carport parking available': { variants: [] },
+      'close to park': { variants: [] },
+      'clubhouse': { variants: [] },
+      'fitness center': { variants: ['gym'] },
+      'furnished aparments available': { variants: ['furnished'] },
+      'on-site dog park': { variants: ['onsite dog park'] },
+      'online rental payments': { variants: [] },
+      'onsite management': { variants: [] },
+      'playground': { variants: [] },
+      'recycling center': { variants: [] },
+      'spa': { variants: ['hottub', 'hot tub'] },
+      'swimming pool': { variants: [] },
+      'tennis court': { variants: [] },
+      'volleyball court': { variants: [] },
+      'wifi available': { variants: [] },
+    }
+  }
+}
