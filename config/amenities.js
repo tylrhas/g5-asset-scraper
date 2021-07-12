@@ -133,9 +133,9 @@ module.exports = {
       'free dolly & cart use':  { variants: [] }
     },
     'storage types': {
-      'automobile storage': { variants: ['auto storage'] },
-      'boat storage': { variants: ['watercraft storage'] },
-      'business storage': { variants: ['commercial storage'] },
+      'automobile storage': { variants: [] },
+      'boat storage': { variants: [] },
+      'business and/or commercial storage': { variants: ['commercial storage'] },
       'cold storage facility': { variants: [] },
       'ground-level units': { variants: [] },
       'indoor storage': { variants: [] },
