@@ -117,5 +117,37 @@ module.exports = {
       'Cat Friendly': { variants: [] },
       'Dog Friendly': { variants: [] }
     }
+  },
+  SS: {
+    'facility features': {
+      'climate controlled': { variants: ['climate control'] },
+      'free moving truck': { variants: ['moving truck', 'moving truck available to rent'] },
+      'groud floor units': { variants: [] },
+      'rv & car storage': { variants: [] },
+      'package delivery': { variants: [] },
+      'online bill payment': { variants: [] },
+      'month to month': { variants: [] },
+      'military discounts': { variants: [] },
+      'free truck use': { variants: [] },
+      'onsite manager': { variants: ['on-site manager'] },
+      'free dolly & cart use':  { variants: [] }
+    },
+    'storage types': {
+      'automobile storage': { variants: ['auto storage'] },
+      'boat storage': { variants: ['watercraft storage'] },
+      'business storage': { variants: ['commercial storage'] },
+      'cold storage facility': { variants: [] },
+      'ground-level units': { variants: [] },
+      'indoor storage': { variants: [] },
+      'motorcycle storage': { variants: [] },
+      'outdoor storage': { variants: [] },
+      'pod storage': { variants: [] },
+      'record storage facility': { variants: [] },
+      'rv storage': { variants: [] },
+      'storage locker rental': { variants: [] },
+      'temperature controlled storage': { variants: [] },
+      'warehouse': { variants: [] },
+      'wine storage': { variants: [] }
+    }
   }
 }
