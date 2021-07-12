@@ -16,23 +16,25 @@ describe('Scraper class', () => {
   })
 
   test('bad constructor params', () => {
+    expect(() => new Scraper({ vertical: null })).toThrowError('invalid vertical')
+    expect(() => new Scraper({ vertical: 'foo' })).toThrowError('invalid vertical')
     expect(() => {
-      new Scraper({ rootProtocol: null })
+      new Scraper({ vertical: 'MF', rootProtocol: null })
     }).toThrow('rootProtocol must be set and be either http or https')
     expect(() => {
-      new Scraper({ rootProtocol: 'https', pages: [] })
+      new Scraper({ vertical: 'MF', rootProtocol: 'https', pages: [] })
     }).toThrow('pages must be a non-empty array')
     expect(() => {
-      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: null })
+      new Scraper({ vertical: 'MF', rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: null })
     }).toThrow('scrapers must be an object')
     expect(() => {
-      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: '' })
+      new Scraper({ vertical: 'MF', rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: '' })
     }).toThrow('rootdomain must be set and a string')
     expect(() => {
-      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: 1 })
+      new Scraper({ vertical: 'MF', rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: 1 })
     }).toThrow('rootdomain must be set and a string')
     expect(() => {
-      new Scraper({ rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: null })
+      new Scraper({ vertical: 'MF', rootProtocol: 'https', pages: ['https://solaire8250.com/floor-plans/'], scrapers: {}, rootdomain: null })
     }).toThrow('rootdomain must be set and a string')
   })
 

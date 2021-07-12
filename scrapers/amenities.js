@@ -18,7 +18,7 @@ function getAmenities(scraper) {
     // add to scraper.amenities
     const copy = getCopy(scraper.$)
     for (const [category, items] of Object.entries(amenitiesConfig[scraper.vertical])) {
-      scraper.amenities[category] = []
+      scraper.amenities[category] = scraper.amenities[category] ? scraper.amenities[category] : []
       for (const [amenity, settings] of Object.entries(items)) {
         const amenities = [amenity, ...settings.variants]
         const hasAmenity = keywordMatch(amenities, copy)
@@ -39,6 +39,7 @@ function getCopy($) {
     .text()
     .replace(/\s\s+/g, ' ')
 }
+
 function buildRegexPattern(keywords) {
   const string = keywords.map(word => `(?:^|\\b)${word}s?(?:$|\\b)`)
     .join('|')
