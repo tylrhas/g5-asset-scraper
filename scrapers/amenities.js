@@ -1,4 +1,3 @@
-const amenitiesConfig = require('../config/amenities')
 module.exports = {
   init,
   getAmenities
@@ -15,19 +14,30 @@ function getAmenities(scraper) {
       return scraper.$(el).text().replace(/\s\s+/gm, ' ').trim()
      }).get().filter(a => a)
   } else {
-    // add to scraper.amenities
     const copy = getCopy(scraper.$)
-    for (const [category, items] of Object.entries(amenitiesConfig[scraper.vertical])) {
-      scraper.amenities[category] = scraper.amenities[category] ? scraper.amenities[category] : []
-      for (const [amenity, settings] of Object.entries(items)) {
-        const amenities = [amenity, ...settings.variants]
-        const hasAmenity = keywordMatch(amenities, copy)
-        if (hasAmenity) {
-          scraper.amenities[category].push(amenity)
+    const categoryKeys = Object.keys(scraper.amenitiesConfig)
+    categoryKeys.forEach((categoryKey) => {
+      const category = scraper.amenitiesConfig[categoryKey]
+      if (!scraper.amenities[categoryKey]) scraper.amenities[categoryKey] = {}
+      category.forEach((amenityObj, i) => {
+        const { text, value, variants } = amenityObj
+        const alreadyFound = amenityAlreadyFound(value, scraper.amenities[categoryKey])
+        if (!alreadyFound) {
+          const variantsIsArray = Array.isArray(variants)
+          const amenities = variantsIsArray ? [text, ...variants] : [text]
+          const hasAmenity = keywordMatch(amenities, copy)
+          // adds amenity to scraper.amenities.category
+          if (hasAmenity) {
+            scraper.amenities[categoryKey][value] = { text, value }
+          }
         }
-      }
-    }
+      })
+    })
   }
+}
+
+function amenityAlreadyFound(amenity, category) {
+  return !!(category[amenity])
 }
 
 function getCopy($) {
@@ -41,8 +51,12 @@ function getCopy($) {
 }
 
 function buildRegexPattern(keywords) {
-  const string = keywords.map(word => `(?:^|\\b)${word}s?(?:$|\\b)`)
-    .join('|')
+  const string = keywords.map(word => {
+    const isPlural = word.length > 2 && word.slice(-1) === 's'
+    const pluralizedWord = isPlural ? word : `${word}s`
+    return `(?:^|\\b)${pluralizedWord}?(?:$|\\b)`
+  })
+  .join('|')
   return new RegExp(string, 'gi')
 }
 
